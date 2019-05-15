@@ -1,0 +1,57 @@
+---
+- type: replace
+  path: /releases/-
+  value:
+    name: libvirt-bosh-cpi
+    url: file://((cpi_path))
+
+- type: replace
+  path: /resource_pools/name=vms/stemcell?
+  value:
+    url: https://bosh.io/d/stemcells/bosh-openstack-kvm-ubuntu-xenial-go_agent?v=315.13
+    sha1: 5ec5f3dfe382e31fa0bab540f1879064c99c356e
+
+# Configure Bosh VM size
+- type: replace
+  path: /resource_pools/name=vms/cloud_properties?
+  value:
+    cpu: 2
+    memory: 4GiB
+    ephemeral_disk: 16GiB
+
+# Add CPI job
+- type: replace
+  path: /instance_groups/name=bosh/jobs/-
+  value: &cpi_job
+    name: libvirt_cpi
+    release: libvirt-bosh-cpi
+
+- type: replace
+  path: /instance_groups/name=bosh/properties/director/cpi_job?
+  value: libvirt_cpi
+
+- type: replace
+  path: /cloud_provider/template?
+  value: *cpi_job
+
+# This is for rendering within the VM once stood up
+- type: replace
+  path: /instance_groups/name=bosh/properties/libvirt_cpi/agent?
+  value:
+    mbus: nats://nats:((nats_password))@((internal_ip)):4222
+    blobstore:
+      provider: dav
+      options:
+        endpoint: http://((internal_ip)):25250
+        user: agent
+        password: ((blobstore_agent_password))
+
+# This is for initial standup of VM (bootstrap?)
+- type: replace
+  path: /cloud_provider/properties/libvirt_cpi/agent?
+  value:
+    mbus: "https://mbus:((mbus_bootstrap_password))@0.0.0.0:6868"
+    blobstore:
+      provider: local
+      options:
+        blobstore_path: /var/vcap/micro_bosh/data/cache
