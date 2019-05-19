@@ -23,10 +23,10 @@ func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 	}
 
 	type DiskDevice struct {
-		Type       string `xml:domain>devices>disk>type,attr`
-		Device     string `xml:domain>devices>disk>type,attr`
-		SourceFile string `xml:domain>devices>disk>source>file,attr`
-		TargetDev  string `xml:domain>devices>disk>target>dev,attr`
+		Type       string `xml:"domain>devices>disk>type,attr"`
+		Device     string `xml:"domain>devices>disk>device,attr"`
+		SourceFile string `xml:"domain>devices>disk>source>file,attr"`
+		TargetDev  string `xml:"domain>devices>disk>target>dev,attr"`
 	}
 
 	var disks []DiskDevice
