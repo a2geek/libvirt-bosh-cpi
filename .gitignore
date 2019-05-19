@@ -12,3 +12,4 @@ releases/**/*.tgz
 *~
 *#
 #*
+.vscode
