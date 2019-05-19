@@ -3,7 +3,7 @@ package cpi
 import (
 	"encoding/json"
 
-	"./connection"
+	"libvirt-bosh-cpi/connection"
 
 	"github.com/cloudfoundry/bosh-utils/errors"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"

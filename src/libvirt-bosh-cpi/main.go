@@ -4,7 +4,7 @@ import (
 	"flag"
 	"os"
 
-	"./cpi"
+	"libvirt-bosh-cpi/cpi"
 
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
