@@ -1,12 +1,14 @@
 package cpi
 
 import (
+	"libvirt-bosh-cpi/config"
+	"libvirt-bosh-cpi/mgr"
+
 	boshuuid "github.com/cloudfoundry/bosh-utils/uuid"
-	libvirt "github.com/digitalocean/go-libvirt"
 )
 
 type CPI struct {
-	client  *libvirt.Libvirt
+	manager mgr.Manager
 	uuidGen boshuuid.Generator
-	config  Config
+	config  config.Config
 }

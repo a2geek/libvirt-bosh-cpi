@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 
+	"libvirt-bosh-cpi/config"
 	"libvirt-bosh-cpi/cpi"
 
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -21,7 +22,7 @@ func main() {
 
 	flag.Parse()
 
-	config, err := cpi.NewConfigFromPath(*configPathOpt, fs)
+	config, err := config.NewConfigFromPath(*configPathOpt, fs)
 	if err != nil {
 		logger.Error("main", "Loading config %s", err.Error())
 		os.Exit(1)

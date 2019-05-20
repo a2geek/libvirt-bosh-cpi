@@ -1,4 +1,4 @@
-package cpi
+package config
 
 import (
 	"encoding/json"
