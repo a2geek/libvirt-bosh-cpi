@@ -89,6 +89,10 @@ func (m libvirtManager) CreateStorageVolumeFromImage(name, imagePath string) (li
 	return vol, nil
 }
 
+func (m libvirtManager) StorageVolLookupByName(name string) (libvirt.StorageVol, error) {
+	return m.client.StorageVolLookupByName(m.defaultPool, name)
+}
+
 func (m libvirtManager) StorageVolLookupByPath(path string) (libvirt.StorageVol, error) {
 	return m.client.StorageVolLookupByPath(path)
 }

@@ -46,15 +46,32 @@ func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 func (c CPI) CreateDisk(size int,
 	cloudProps apiv1.DiskCloudProps, associatedVMCID *apiv1.VMCID) (apiv1.DiskCID, error) {
 
-	return apiv1.NewDiskCID("disk-cid"), nil
+	uuid, err := c.uuidGen.Generate()
+	if err != nil {
+		return apiv1.DiskCID{}, bosherr.WrapError(err, "generating uuid")
+	}
+
+	name := c.persistantDiskName(uuid)
+
+	_, err = c.manager.CreateStorageVolume(name, uint64(size))
+	if err != nil {
+		return apiv1.DiskCID{}, bosherr.WrapError(err, "creating disk")
+	}
+
+	return apiv1.NewDiskCID(name), nil
 }
 
 func (c CPI) DeleteDisk(cid apiv1.DiskCID) error {
+	if err := c.manager.StorageVolDeleteByName(cid.AsString()); err != nil {
+		return bosherr.WrapErrorf(err, "deleting disk '%s'", cid.AsString())
+	}
+
 	return nil
 }
 
 func (c CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
-	return nil
+	_, err := c.AttachDiskV2(vmCID, diskCID)
+	return err
 }
 
 func (c CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskHint, error) {
@@ -66,7 +83,12 @@ func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 }
 
 func (c CPI) HasDisk(cid apiv1.DiskCID) (bool, error) {
-	return false, nil
+	vol, err := c.manager.StorageVolLookupByName(cid.AsString())
+	if err != nil {
+		return false, bosherr.WrapErrorf(err, "has disk on '%s'", cid.AsString())
+	}
+
+	return cid.AsString() == vol.Name, nil
 }
 
 func (c CPI) SetDiskMetadata(cid apiv1.DiskCID, metadata apiv1.DiskMeta) error {
