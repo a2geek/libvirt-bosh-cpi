@@ -15,13 +15,6 @@ func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 		return []apiv1.DiskCID{}, bosherr.WrapError(err, "unable to retrieve VM description")
 	}
 
-	type DiskDevice struct {
-		Type       string `xml:"domain>devices>disk>type,attr"`
-		Device     string `xml:"domain>devices>disk>device,attr"`
-		SourceFile string `xml:"domain>devices>disk>source>file,attr"`
-		TargetDev  string `xml:"domain>devices>disk>target>dev,attr"`
-	}
-
 	var disks []DiskDevice
 	err = xml.Unmarshal([]byte(xmlstring), &disks)
 	if err != nil {
@@ -75,7 +68,25 @@ func (c CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 }
 
 func (c CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskHint, error) {
-	return apiv1.NewDiskHintFromString(""), nil
+	vol, err := c.manager.StorageVolGetXMLByName(diskCID.AsString())
+	if err != nil {
+		return apiv1.NewDiskHintFromString(""), bosherr.WrapErrorf(err, "unable to locate storage volume '%s'", diskCID.AsString())
+	}
+
+	var storageVol MgrStorageVol{}
+	err = xml.Unmarshal([]byte(xmlstring), &storageVol)
+	if err != nil {
+		return apiv1.NewDiskHintFromString(""), bosherr.WrapError(err, "unable to unmarshal storage volume XML")
+	}
+	storageVol.TargetDevice="vdb"
+
+	err := c.manager.DomainAttachDevice(vmCID.AsString(), storageVol)
+	if err != nil {
+		return apiv1.NewDiskHintFromString(""), bosherr.WrapErrorf(err, "attaching disk '%s' to vm '%s'", diskCID.AsString(), vmCID.AsString())
+	}
+
+	diskHint := apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/vdb"})
+	return diskHint, nil
 }
 
 func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {

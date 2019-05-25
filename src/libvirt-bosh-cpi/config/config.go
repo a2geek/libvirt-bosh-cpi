@@ -20,6 +20,7 @@ type Config struct {
 type LibvirtSettings struct {
 	StoragePoolName string
 	StorageVolXml   string
+	DiskDeviceXml   string
 }
 
 func NewConfigFromPath(path string, fs boshsys.FileSystem) (Config, error) {

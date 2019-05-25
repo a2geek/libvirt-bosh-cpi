@@ -97,6 +97,15 @@ func (m libvirtManager) StorageVolLookupByPath(path string) (libvirt.StorageVol,
 	return m.client.StorageVolLookupByPath(path)
 }
 
+func (m libvirtManager) StorageVolGetXMLByName(name string) (string, error) {
+	vol, err := m.client.StorageVolLookupByName(m.defaultPool, name)
+	if err != nil {
+		return "", bosherr.WrapErrorf(err, "unable to locate '%s' storage volume", name)
+	}
+
+	return m.client.StorageVolGetXMLDesc(vol, 0)
+}
+
 func (m libvirtManager) StorageVolDeleteByName(name string) error {
 	vol, err := m.client.StorageVolLookupByName(m.defaultPool, name)
 	if err != nil {
@@ -118,4 +127,24 @@ func (m libvirtManager) DomainGetXMLDescByName(name string, flags libvirt.Domain
 	}
 
 	return m.client.DomainGetXMLDesc(vm, 0)
+}
+
+func (m libvirtManager) DomainAttachDevice(vmName string, storageVol MgrStorageVol) error {
+	vm, err := m.client.DomainLookupByName(vmName)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to find '%s' VM", vmName)
+	}
+
+	tmpl, err := template.New("attach-device").Parse(m.settings.DiskDeviceXml)
+	if err != nil {
+		return bosherr.WrapError(err, "unable to parse storage volume XML")
+	}
+
+	var xml bytes.Buffer
+	err = tmpl.Execute(&xml, storageVol)
+	if err != nil {
+		return bosherr.WrapError(err, "unable to generate storage volume XML template")
+	}
+
+	return m.client.DomainAttachDevice(vm, xml.String())
 }

@@ -6,8 +6,8 @@
     disk_device: |
       <disk type='file' device='disk'>
         <driver name='qemu' type='raw' cache='none'/>
-        <source file='{{.Path}}'/>
-        <target dev='vdb'/>
+        <source file='{{.TargetPath}}'/>
+        <target dev='{{.TargetDevice}}'/>
       </disk>
     storage_volume: |
       <volume>
