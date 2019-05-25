@@ -77,10 +77,19 @@ virsh # exit
 
 # Developing
 
-Since the packaging is a bit wonky in this setup (call it _vendoring_), the `GOPATH` needs to be set to the project root. In VS Code, the `settings.json` file will contain something like:
+Since the packaging is a bit wonky in this setup (call it _vendoring_), the `GOPATH` needs to be set to the project root. 
+
+In VS Code, the `settings.json` file will contain something like:
 
 ```
 {
     "go.gopath": "/path/to/the/directory/libvirt-bosh-cpi"
 }
+```
+
+At the command-line, navigate to the source directory and then set the `GOPATH` and compile:
+
+```
+$ export GOPATH=$PWD
+$ go build src/libvirt-bosh-cpi/main/main.go 
 ```
