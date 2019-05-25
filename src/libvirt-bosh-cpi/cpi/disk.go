@@ -90,7 +90,19 @@ func (c CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskH
 }
 
 func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
-	return nil
+	vol, err := c.manager.StorageVolGetXMLByName(diskCID.AsString())
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to locate storage volume '%s'", diskCID.AsString())
+	}
+
+	var storageVol MgrStorageVol{}
+	err = xml.Unmarshal([]byte(xmlstring), &storageVol)
+	if err != nil {
+		return bosherr.WrapError(err, "unable to unmarshal storage volume XML")
+	}
+	storageVol.TargetDevice="vdb"
+
+	return c.manager.DomainDetachDevice(vmCID.AsString(), storageVol)
 }
 
 func (c CPI) HasDisk(cid apiv1.DiskCID) (bool, error) {

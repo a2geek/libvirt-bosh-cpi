@@ -8,6 +8,7 @@ type Manager interface {
 	CreateStorageVolume(name string, size uint64) (libvirt.StorageVol, error)
 	CreateStorageVolumeFromImage(name, imagePath string) (libvirt.StorageVol, error)
 	DomainAttachDevice(vmName string, storageVol MgrStorageVol) error
+	DomainDetachDevice(vmName string, storageVol MgrStorageVol) error
 	DomainGetXMLDescByName(name string, flags libvirt.DomainXMLFlags) (string, error)
 	StorageVolDeleteByName(name string) error
 	StorageVolLookupByName(name string) (libvirt.StorageVol, error)

@@ -148,3 +148,23 @@ func (m libvirtManager) DomainAttachDevice(vmName string, storageVol MgrStorageV
 
 	return m.client.DomainAttachDevice(vm, xml.String())
 }
+
+func (m libvirtManager) DomainDetachDevice(vmName string, storageVol MgrStorageVol) error {
+	vm, err := m.client.DomainLookupByName(vmName)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to find '%s' VM", vmName)
+	}
+
+	tmpl, err := template.New("attach-device").Parse(m.settings.DiskDeviceXml)
+	if err != nil {
+		return bosherr.WrapError(err, "unable to parse storage volume XML")
+	}
+
+	var xml bytes.Buffer
+	err = tmpl.Execute(&xml, storageVol)
+	if err != nil {
+		return bosherr.WrapError(err, "unable to generate storage volume XML template")
+	}
+
+	return m.client.DomainDetachDevice(vm, xml.String())
+}
