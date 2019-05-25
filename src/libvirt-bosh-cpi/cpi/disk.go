@@ -3,6 +3,7 @@ package cpi
 import (
 	"encoding/xml"
 	"fmt"
+	"libvirt-bosh-cpi/mgr"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
@@ -15,7 +16,7 @@ func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 		return []apiv1.DiskCID{}, bosherr.WrapError(err, "unable to retrieve VM description")
 	}
 
-	var disks []DiskDevice
+	var disks []mgr.DiskDeviceXml
 	err = xml.Unmarshal([]byte(xmlstring), &disks)
 	if err != nil {
 		return []apiv1.DiskCID{}, bosherr.WrapError(err, "unable to unmarshal disk XML")
@@ -68,19 +69,19 @@ func (c CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 }
 
 func (c CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskHint, error) {
-	vol, err := c.manager.StorageVolGetXMLByName(diskCID.AsString())
+	xmlstring, err := c.manager.StorageVolGetXMLByName(diskCID.AsString())
 	if err != nil {
 		return apiv1.NewDiskHintFromString(""), bosherr.WrapErrorf(err, "unable to locate storage volume '%s'", diskCID.AsString())
 	}
 
-	var storageVol MgrStorageVol{}
+	var storageVol mgr.StorageVolXml
 	err = xml.Unmarshal([]byte(xmlstring), &storageVol)
 	if err != nil {
 		return apiv1.NewDiskHintFromString(""), bosherr.WrapError(err, "unable to unmarshal storage volume XML")
 	}
-	storageVol.TargetDevice="vdb"
+	storageVol.TargetDevice = "vdb"
 
-	err := c.manager.DomainAttachDevice(vmCID.AsString(), storageVol)
+	err = c.manager.DomainAttachDevice(vmCID.AsString(), storageVol)
 	if err != nil {
 		return apiv1.NewDiskHintFromString(""), bosherr.WrapErrorf(err, "attaching disk '%s' to vm '%s'", diskCID.AsString(), vmCID.AsString())
 	}
@@ -90,17 +91,17 @@ func (c CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskH
 }
 
 func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
-	vol, err := c.manager.StorageVolGetXMLByName(diskCID.AsString())
+	xmlstring, err := c.manager.StorageVolGetXMLByName(diskCID.AsString())
 	if err != nil {
 		return bosherr.WrapErrorf(err, "unable to locate storage volume '%s'", diskCID.AsString())
 	}
 
-	var storageVol MgrStorageVol{}
+	var storageVol mgr.StorageVolXml
 	err = xml.Unmarshal([]byte(xmlstring), &storageVol)
 	if err != nil {
 		return bosherr.WrapError(err, "unable to unmarshal storage volume XML")
 	}
-	storageVol.TargetDevice="vdb"
+	storageVol.TargetDevice = "vdb"
 
 	return c.manager.DomainDetachDevice(vmCID.AsString(), storageVol)
 }
@@ -119,7 +120,7 @@ func (c CPI) SetDiskMetadata(cid apiv1.DiskCID, metadata apiv1.DiskMeta) error {
 }
 
 func (c CPI) ResizeDisk(cid apiv1.DiskCID, size int) error {
-	return nil
+	return c.manager.StorageVolResize(cid.AsString(), uint64(size))
 }
 
 func (c CPI) SnapshotDisk(cid apiv1.DiskCID, meta apiv1.DiskMeta) (apiv1.SnapshotCID, error) {

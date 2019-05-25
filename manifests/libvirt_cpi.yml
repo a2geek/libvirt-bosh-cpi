@@ -55,3 +55,8 @@
       provider: local
       options:
         blobstore_path: /var/vcap/micro_bosh/data/cache
+
+# Enable the CPI level resizing of disks as the default (good idea or no?)
+- type: replace
+  path: /instance_groups/name=bosh/properties/director/enable_cpi_resize_disk?
+  value: true

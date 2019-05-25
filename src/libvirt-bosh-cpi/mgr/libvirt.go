@@ -120,6 +120,15 @@ func (m libvirtManager) StorageVolDeleteByName(name string) error {
 	return nil
 }
 
+func (m libvirtManager) StorageVolResize(name string, capacity uint64) error {
+	vol, err := m.client.StorageVolLookupByName(m.defaultPool, name)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to locate '%s' storage volume", name)
+	}
+
+	return m.client.StorageVolResize(vol, capacity, 0)
+}
+
 func (m libvirtManager) DomainGetXMLDescByName(name string, flags libvirt.DomainXMLFlags) (string, error) {
 	vm, err := m.client.DomainLookupByName(name)
 	if err != nil {
@@ -129,7 +138,7 @@ func (m libvirtManager) DomainGetXMLDescByName(name string, flags libvirt.Domain
 	return m.client.DomainGetXMLDesc(vm, 0)
 }
 
-func (m libvirtManager) DomainAttachDevice(vmName string, storageVol MgrStorageVol) error {
+func (m libvirtManager) DomainAttachDevice(vmName string, storageVol StorageVolXml) error {
 	vm, err := m.client.DomainLookupByName(vmName)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "unable to find '%s' VM", vmName)
@@ -149,7 +158,7 @@ func (m libvirtManager) DomainAttachDevice(vmName string, storageVol MgrStorageV
 	return m.client.DomainAttachDevice(vm, xml.String())
 }
 
-func (m libvirtManager) DomainDetachDevice(vmName string, storageVol MgrStorageVol) error {
+func (m libvirtManager) DomainDetachDevice(vmName string, storageVol StorageVolXml) error {
 	vm, err := m.client.DomainLookupByName(vmName)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "unable to find '%s' VM", vmName)
