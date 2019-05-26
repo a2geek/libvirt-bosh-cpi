@@ -3,6 +3,7 @@ package cpi
 import (
 	"fmt"
 
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 )
 
@@ -35,11 +36,16 @@ func (c CPI) SetVMMetadata(cid apiv1.VMCID, metadata apiv1.VMMeta) error {
 }
 
 func (c CPI) HasVM(cid apiv1.VMCID) (bool, error) {
-	return false, nil
+	vm, err := c.manager.DomainLookupByName(cid.AsString())
+	if err != nil {
+		return false, bosherr.WrapErrorf(err, "unable to find '%s' VM", cid.AsString())
+	}
+
+	return cid.AsString() != vm.Name, nil
 }
 
 func (c CPI) RebootVM(cid apiv1.VMCID) error {
-	return nil
+	return c.manager.DomainReboot(cid.AsString())
 }
 
 func (c CPI) ephemeralDiskName(cid string) string {

@@ -11,7 +11,7 @@ import (
 
 func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 	name := c.vmName(cid.AsString())
-	xmlstring, err := c.manager.DomainGetXMLDescByName(name, 0)
+	xmlstring, err := c.manager.DomainGetXMLDescByName(name)
 	if err != nil {
 		return []apiv1.DiskCID{}, bosherr.WrapError(err, "unable to retrieve VM description")
 	}

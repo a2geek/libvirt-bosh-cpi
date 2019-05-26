@@ -129,7 +129,7 @@ func (m libvirtManager) StorageVolResize(name string, capacity uint64) error {
 	return m.client.StorageVolResize(vol, capacity, 0)
 }
 
-func (m libvirtManager) DomainGetXMLDescByName(name string, flags libvirt.DomainXMLFlags) (string, error) {
+func (m libvirtManager) DomainGetXMLDescByName(name string) (string, error) {
 	vm, err := m.client.DomainLookupByName(name)
 	if err != nil {
 		return "", bosherr.WrapError(err, "unable to find VM")
@@ -176,4 +176,16 @@ func (m libvirtManager) DomainDetachDevice(vmName string, storageVol StorageVolX
 	}
 
 	return m.client.DomainDetachDevice(vm, xml.String())
+}
+
+func (m libvirtManager) DomainLookupByName(name string) (libvirt.Domain, error) {
+	return m.client.DomainLookupByName(name)
+}
+
+func (m libvirtManager) DomainReboot(name string) error {
+	vm, err := m.client.DomainLookupByName(name)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to find '%s' VM", name)
+	}
+	return m.client.DomainReboot(vm, 0)
 }
