@@ -189,3 +189,12 @@ func (m libvirtManager) DomainReboot(name string) error {
 	}
 	return m.client.DomainReboot(vm, 0)
 }
+
+func (m libvirtManager) DomainDestroy(name string) error {
+	vm, err := m.client.DomainLookupByName(name)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to find vm '%s'", name)
+	}
+
+	return m.client.DomainDestroy(vm)
+}

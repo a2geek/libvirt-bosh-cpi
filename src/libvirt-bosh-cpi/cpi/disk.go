@@ -16,8 +16,12 @@ func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 		return []apiv1.DiskCID{}, bosherr.WrapError(err, "unable to retrieve VM description")
 	}
 
+	return c.discoverDisks(xmlstring)
+}
+
+func (c CPI) discoverDisks(domainXML string) ([]apiv1.DiskCID, error) {
 	var disks []mgr.DiskDeviceXml
-	err = xml.Unmarshal([]byte(xmlstring), &disks)
+	err := xml.Unmarshal([]byte(domainXML), &disks)
 	if err != nil {
 		return []apiv1.DiskCID{}, bosherr.WrapError(err, "unable to unmarshal disk XML")
 	}
@@ -35,6 +39,7 @@ func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 	}
 
 	return diskcids, nil
+
 }
 
 func (c CPI) CreateDisk(size int,

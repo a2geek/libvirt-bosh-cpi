@@ -12,7 +12,8 @@ func (c CPI) CreateVM(
 	cloudProps apiv1.VMCloudProps, networks apiv1.Networks,
 	associatedDiskCIDs []apiv1.DiskCID, env apiv1.VMEnv) (apiv1.VMCID, error) {
 
-	return apiv1.NewVMCID("vm-cid"), nil
+	vmCID, _, err := c.CreateVMV2(agentID, stemcellCID, cloudProps, networks, associatedDiskCIDs, env)
+	return vmCID, err
 }
 
 func (c CPI) CreateVMV2(
@@ -24,6 +25,30 @@ func (c CPI) CreateVMV2(
 }
 
 func (c CPI) DeleteVM(cid apiv1.VMCID) error {
+	domainXML, err := c.manager.DomainGetXMLDescByName(cid.AsString())
+
+	diskcids, err := c.discoverDisks(domainXML)
+	if err != nil {
+		return bosherr.WrapError(err, "discovering attached disks")
+	}
+
+	for _, diskCID := range diskcids {
+		err = c.DetachDisk(cid, diskCID)
+		if err != nil {
+			return bosherr.WrapErrorf(err, "unable to detach disk '%s' from vm '%s'", diskCID.AsString(), cid.AsString())
+		}
+
+		err = c.DeleteDisk(diskCID)
+		if err != nil {
+			return bosherr.WrapErrorf(err, "unable to delete disk '%s' (was attached to vm '%s')", diskCID.AsString(), cid.AsString())
+		}
+	}
+
+	err = c.manager.DomainDestroy(cid.AsString())
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to delete vm '%s'", cid.AsString())
+	}
+
 	return nil
 }
 
