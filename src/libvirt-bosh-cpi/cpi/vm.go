@@ -28,7 +28,11 @@ func (c CPI) DeleteVM(cid apiv1.VMCID) error {
 }
 
 func (c CPI) CalculateVMCloudProperties(res apiv1.VMResources) (apiv1.VMCloudProps, error) {
-	return apiv1.NewVMCloudPropsFromMap(map[string]interface{}{}), nil
+	props := make(map[string]interface{})
+	props["cpu"] = res.CPU
+	props["memory"] = res.RAM
+	props["ephemeral_disk"] = res.EphemeralDiskSize
+	return apiv1.NewVMCloudPropsFromMap(props), nil
 }
 
 func (c CPI) SetVMMetadata(cid apiv1.VMCID, metadata apiv1.VMMeta) error {
