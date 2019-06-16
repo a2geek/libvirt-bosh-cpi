@@ -1,0 +1,4 @@
+<disk type='file' device='disk'>
+    <source file='/var/lib/libvirt/images/test-ephemeral-volume'/>
+    <target dev='vdb' bus='virtio'/>
+</disk>

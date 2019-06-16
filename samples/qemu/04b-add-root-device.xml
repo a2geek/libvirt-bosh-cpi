@@ -1,0 +1,5 @@
+<disk type='file' device='disk'>
+    <driver name='qemu' type='qcow2'/>
+    <source file='/var/lib/libvirt/images/test-root-volume'/>
+    <target dev='vda' bus='virtio'/>
+</disk>

@@ -1,0 +1,23 @@
+<domain type='qemu'>
+  <name>vm-8f7b3bbd-f777-466d-940b-312ecc3c6db6</name>
+  <uuid>8f7b3bbd-f777-466d-940b-312ecc3c6db6</uuid>
+  <memory unit='MiB'>4096</memory>
+  <vcpu>2</vcpu>
+  <os>
+    <type>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <vmport state='off'/>
+  </features>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+  </devices>
+</domain>

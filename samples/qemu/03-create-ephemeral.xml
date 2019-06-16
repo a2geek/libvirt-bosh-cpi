@@ -1,0 +1,5 @@
+<volume>
+    <name>test-ephemeral-volume</name>
+    <allocation unit="G">0</allocation>
+    <capacity unit="MiB">16384</capacity>
+</volume>

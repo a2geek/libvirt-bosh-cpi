@@ -1,0 +1,5 @@
+<volume>
+    <name>bosh-openstack-kvm-ubuntu-xenial-go_agent-170.14</name>
+    <allocation unit="G">0</allocation>
+    <capacity unit="MiB">3072</capacity>
+</volume>

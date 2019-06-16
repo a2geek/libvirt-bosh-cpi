@@ -1,0 +1,5 @@
+<volume>
+    <name>test-root-volume</name>
+    <allocation unit="G">0</allocation>
+    <capacity unit="MiB">0</capacity>
+</volume>
