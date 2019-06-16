@@ -33,7 +33,7 @@
       </interface>
     vm_domain: |
       <domain type='qemu'>
-        <name>vm-{{.UUID}}</name>
+        <name>{{.Name}}</name>
         <uuid>{{.UUID}}</uuid>
         <memory unit='MiB'>{{.Memory}}</memory>
         <vcpu>{{.CPU}}</vcpu>

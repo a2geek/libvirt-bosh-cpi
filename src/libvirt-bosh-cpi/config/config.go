@@ -12,15 +12,20 @@ import (
 )
 
 type Config struct {
-	Connection     connection.Config
-	ConnectFactory connection.Factory
-	Settings       LibvirtSettings
 	Agent          apiv1.AgentOptions
+	ConnectFactory connection.Factory
+	Connection     connection.Config
+	Settings       LibvirtSettings
 }
 type LibvirtSettings struct {
-	StoragePoolName string
-	StorageVolXml   string
-	DiskDeviceXml   string
+	DiskDeviceXml             string
+	ManualNetworkInterfaceXml string
+	NetworkName               string
+	NetworkDhcpIpXml          string
+	RootDeviceXml             string
+	StoragePoolName           string
+	StorageVolXml             string
+	VmDomainXml               string
 }
 
 func NewConfigFromPath(path string, fs boshsys.FileSystem) (Config, error) {
@@ -57,8 +62,38 @@ func NewConfigFromPath(path string, fs boshsys.FileSystem) (Config, error) {
 }
 
 func (c Config) Validate() error {
+	var e []error
+
+	if c.Settings.DiskDeviceXml == "" {
+		e = append(e, errors.Error("disk device xml is required"))
+	}
+
+	if c.Settings.ManualNetworkInterfaceXml == "" {
+		e = append(e, errors.Error("manual network interface xml is required"))
+	}
+
+	if c.Settings.NetworkName == "" {
+		e = append(e, errors.Error("network name is required"))
+	}
+
+	if c.Settings.RootDeviceXml == "" {
+		e = append(e, errors.Error("root device xml is required"))
+	}
+
 	if c.Settings.StoragePoolName == "" {
-		return errors.Error("storage pool name is required")
+		e = append(e, errors.Error("storage pool name is required"))
+	}
+
+	if c.Settings.StorageVolXml == "" {
+		e = append(e, errors.Error("storage volume xml is required"))
+	}
+
+	if c.Settings.VmDomainXml == "" {
+		e = append(e, errors.Error("domain xml is required"))
+	}
+
+	if len(e) > 0 {
+		return errors.NewMultiError(e...)
 	}
 
 	return nil

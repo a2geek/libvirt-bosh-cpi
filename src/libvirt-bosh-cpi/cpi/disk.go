@@ -74,25 +74,29 @@ func (c CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 }
 
 func (c CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskHint, error) {
-	xmlstring, err := c.manager.StorageVolGetXMLByName(diskCID.AsString())
+	err := c.attachDiskDevice(vmCID.AsString(), diskCID.AsString(), "vdc")
 	if err != nil {
-		return apiv1.NewDiskHintFromString(""), bosherr.WrapErrorf(err, "unable to locate storage volume '%s'", diskCID.AsString())
+		return apiv1.NewDiskHintFromString(""), bosherr.WrapErrorf(err, "attaching disk '%s' to vm '%s'", diskCID.AsString(), vmCID.AsString())
+	}
+
+	diskHint := apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/vdc"})
+	return diskHint, nil
+}
+
+func (c CPI) attachDiskDevice(vmName, diskName, deviceName string) error {
+	xmlstring, err := c.manager.StorageVolGetXMLByName(diskName)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to locate storage volume '%s'", diskName)
 	}
 
 	var storageVol mgr.StorageVolXml
 	err = xml.Unmarshal([]byte(xmlstring), &storageVol)
 	if err != nil {
-		return apiv1.NewDiskHintFromString(""), bosherr.WrapError(err, "unable to unmarshal storage volume XML")
+		return bosherr.WrapError(err, "unable to unmarshal storage volume XML")
 	}
-	storageVol.TargetDevice = "vdb"
+	storageVol.TargetDevice = deviceName
 
-	err = c.manager.DomainAttachDevice(vmCID.AsString(), storageVol)
-	if err != nil {
-		return apiv1.NewDiskHintFromString(""), bosherr.WrapErrorf(err, "attaching disk '%s' to vm '%s'", diskCID.AsString(), vmCID.AsString())
-	}
-
-	diskHint := apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/vdb"})
-	return diskHint, nil
+	return c.manager.DomainAttachDisk(vmName, storageVol)
 }
 
 func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
@@ -108,7 +112,7 @@ func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 	}
 	storageVol.TargetDevice = "vdb"
 
-	return c.manager.DomainDetachDevice(vmCID.AsString(), storageVol)
+	return c.manager.DomainDetachDisk(vmCID.AsString(), storageVol)
 }
 
 func (c CPI) HasDisk(cid apiv1.DiskCID) (bool, error) {
