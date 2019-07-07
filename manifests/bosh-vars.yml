@@ -1,0 +1,12 @@
+director_name: libvirt
+
+cpi_path: /home/rob/Documents/Source/libvirt-bosh-cpi/cpi
+
+internal_cidr: 192.168.123.1/24
+internal_gw: 192.168.123.1
+internal_ip: 192.168.123.7
+
+libvirt_socket: /var/run/libvirt/libvirt-sock
+
+libvirt_network_name: default
+libvirt_storage_pool_name: bosh-pool
