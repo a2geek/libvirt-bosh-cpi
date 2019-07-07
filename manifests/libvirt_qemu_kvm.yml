@@ -16,7 +16,7 @@
       </disk>
     disk_device: |
       <disk type='file' device='disk'>
-        <driver name='qemu' type='{{.DiskType}}' cache='none'/>
+        <driver name='qemu' type='raw' cache='none'/>
         <source file='{{.TargetPath}}'/>
         <target dev='{{.TargetDevice}}' bus='virtio'/>
       </disk>
@@ -52,12 +52,9 @@
         <on_reboot>restart</on_reboot>
         <on_crash>restart</on_crash>
         <devices>
-          <emulator>/usr/bin/qemu-system-x86_64</emulator>
-          <devices>
-            <console type='pty'>
-              <target type='serial' port='0'/>
-            </console>
-          </devices>
+          <console type='pty'>
+            <target type='serial' port='0'/>
+          </console>
         </devices>
       </domain>
 
