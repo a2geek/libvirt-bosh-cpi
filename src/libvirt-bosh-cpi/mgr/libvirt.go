@@ -111,17 +111,17 @@ func (m libvirtManager) ReadStorageVolumeBytes(name string) ([]byte, error) {
 		return nil, bosherr.WrapError(err, "unable to locate volume")
 	}
 
-	_, _, allocation, err := m.client.StorageVolGetInfo(vol)
-	if err != nil {
-		return nil, bosherr.WrapError(err, "checking size of volume")
-	}
-
 	var b bytes.Buffer
 	w := bufio.NewWriter(&b)
 
-	err = m.client.StorageVolDownload(vol, w, 0, allocation, 0)
+	err = m.client.StorageVolDownload(vol, w, 0, 0, 0)
 	if err != nil {
 		return nil, bosherr.WrapError(err, "reading data from volume")
+	}
+
+	err = w.Flush()
+	if err != nil {
+		return nil, bosherr.WrapError(err, "unable to flush data from volume")
 	}
 
 	return b.Bytes(), nil
