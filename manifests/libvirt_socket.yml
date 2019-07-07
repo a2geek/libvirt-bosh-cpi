@@ -7,5 +7,5 @@
 
 # This is for initial standup of VM (bootstrap?)
 - type: replace
-  path: /cloud_provider/properties/lxd_cpi/libvirt?
+  path: /cloud_provider/properties/libvirt_cpi/libvirt?
   value: *libvirt_connection

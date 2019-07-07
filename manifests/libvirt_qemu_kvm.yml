@@ -1,12 +1,14 @@
 # Rendered with Go text templates, see https://golang.org/pkg/text/template/
+
+# This is for rendering within the VM once stood up
 - type: replace
-  path: /resource_pools/name=vms/cloud_properties/libvirt?
-  value:
+  path: /instance_groups/name=bosh/properties/libvirt_cpi/settings?
+  value: &libvirt_settings
     storage_pool_name: ((libvirt_storage_pool_name))
     network_name: ((libvirt_network_name))
     network_dhcp_ip: |
       <host name='{{.VmName}}' ip='{{.IpAddress}}'/>
-    boot_device: |
+    root_device: |
       <disk type='file' device='disk'>
         <driver name='qemu' type='qcow2' cache='none'/>
         <source file='{{.TargetPath}}'/>
@@ -58,3 +60,8 @@
           </devices>
         </devices>
       </domain>
+
+# This is for initial standup of VM (bootstrap?)
+- type: replace
+  path: /cloud_provider/properties/libvirt_cpi/settings?
+  value: *libvirt_settings
