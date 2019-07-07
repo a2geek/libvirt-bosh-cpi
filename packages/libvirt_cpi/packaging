@@ -1,0 +1,19 @@
+# 'Blatently' borrowed from bosh-warden-cpi-release. Thanks!
+set -ex
+
+if [ -z "$BOSH_PACKAGES_DIR" ]; then
+	pkg_dir=$(readlink -nf /var/vcap/packages/golang-1.12-linux)
+else
+	pkg_dir=$BOSH_PACKAGES_DIR/golang-1.12-linux
+fi
+
+source ${pkg_dir}/bosh/compile.env
+
+mkdir ../src && cp -a * ../src/ && mv ../src ./src
+
+if [ ! -d $BOSH_INSTALL_TARGET/bin ]
+then
+  mkdir $BOSH_INSTALL_TARGET/bin
+fi
+
+go build -o $BOSH_INSTALL_TARGET/bin/cpi src/libvirt-bosh-cpi/main/main.go

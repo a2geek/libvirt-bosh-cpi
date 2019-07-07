@@ -1,0 +1,5 @@
+check process libvirt_cpi
+  with pidfile /var/vcap/sys/run/libvirt_cpi/cpi.pid
+  start program "/var/vcap/jobs/libvirt_cpi/bin/cpi_ctl start"
+  stop program "/var/vcap/jobs/libvirt_cpi/bin/cpi_ctl stop"
+  group vcap

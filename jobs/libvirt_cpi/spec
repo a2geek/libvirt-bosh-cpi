@@ -1,0 +1,59 @@
+---
+name: libvirt_cpi
+
+templates:
+  cpi.erb: bin/cpi
+  cpi_ctl.erb: bin/cpi_ctl
+  cpi.json.erb: config/cpi.json
+
+packages:
+- libvirt_cpi
+
+properties: {}
+  # Libvirt Settings
+  libvirt_cpi.settings.disk_device:
+    description: "XML template for generating disk device"
+  libvirt_cpi.settings.manual_network_interface:
+    description: "XML template for generating a 'manual' network device"
+  libvirt_cpi.settings.network_name:
+    description: "Name of Libvirt network for VMs to use"
+  libvirt_cpi.settings.network_dhcp_ip:
+    description: "XML for assigning IP address for DHCP devices"
+  libvirt_cpi.settings.root_device:
+    description: "XML template for the root device based on a stemcell"
+  libvirt_cpi.settings.storage_pool_name:
+    description: "Name of Libvirt storage pool to use"
+  libvirt_cpi.settings.storage_volume:
+    description: "XML template for permanent and ephemeral disks"
+  libvirt_cpi.settings.vm_domain:
+    description: "XML template for creating a VM based on a Libvirt domain"
+
+  # Libvirt Connection
+  libvirt_cpi.libvirt.type:
+    description: "Type of Libvirt connection to use: socket, tcp, tls"
+  libvirt_cpi.libvirt.socket:
+    description: "Libvirt socket location (socket)"
+  libvirt_cpi.libvirt.host:
+    description: "Libvirt host name (tcp/tls)"
+  libvirt_cpi.libvirt.port:
+    description: "Libvirt port number (tcp/tls)"
+  libvirt_cpi.libvirt.client.certificate:
+    description: "Libvirt client certificate (tls)"
+  libvirt_cpi.libvirt.client.private_key:
+    description: "Libvirt client private key (tls)"
+  libvirt_cpi.libvirt.server_ca.certificate:
+    description: "Libvirt servce CA certificate (tls)"
+
+  # Agent Configuration
+  libvirt_cpi.agent.mbus:
+    description: "Mbus URL used by deployed BOSH agents"
+    example: "nats://nats:nats-password@10.254.50.4:4222"
+  libvirt_cpi.agent.ntp:
+    description: "NTP configuration used by deployed BOSH agents"
+    default: []
+  libvirt_cpi.agent.blobstore.provider:
+    description: "Provider type for the blobstore used by deployed BOSH agents (e.g. dav, s3)"
+    default: "dav"
+  libvirt_cpi.agent.blobstore.options:
+    description: "Options for the blobstore used by deployed BOSH agents"
+    default: {}

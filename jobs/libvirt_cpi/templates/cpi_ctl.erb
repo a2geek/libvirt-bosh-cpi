@@ -1,0 +1,24 @@
+#!/bin/bash
+
+LOG_DIR=/var/vcap/sys/log/libvirt_cpi
+RUN_DIR=/var/vcap/sys/run/libvirt_cpi
+PIDFILE=$RUN_DIR/cpi.pid
+
+case $1 in
+
+  start)
+    mkdir -p           $RUN_DIR $LOG_DIR
+    chown -R vcap:vcap $RUN_DIR $LOG_DIR
+
+    echo 1 > $PIDFILE
+    ;;
+
+  stop)
+    rm -f $PIDFILE
+
+    ;;
+
+  *)
+
+  echo "Usage: cpi_ctl {start|stop}" ;;
+esac

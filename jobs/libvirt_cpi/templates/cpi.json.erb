@@ -1,0 +1,36 @@
+<%=
+
+config = {
+  "Settings" => {
+    "DiskDeviceXml" => p("libvirt_cpi.settings.disk_device"),
+    "ManualNetworkInterfaceXml" => p("libvirt_cpi.settings.manual_network_interface"),
+    "NetworkName" => p("libvirt_cpi.settings.network_name"),
+    "NetworkDhcpIpXml" => p("libvirt_cpi.settings.network_dhcp_ip"),
+    "RootDeviceXml" => p("libvirt_cpi.settings.root_device"),
+    "StoragePoolName" => p("libvirt_cpi.settings.storage_pool_name"),
+    "StorageVolXml" => p("libvirt_cpi.settings.storage_volume"),
+    "VmDomainXml" => p("libvirt_cpi.settings.vm_domain")
+  },
+  "Connection" => {
+    "Type" => p("libvirt_cpi.libvirt.type"),
+    "Socket" => p("libvirt_cpi.libvirt.socket"),
+    "Host" => p("libvirt_cpi.libvirt.host"),
+    "Port" => p("libvirt_cpi.libvirt.port"),
+    "ClientCertificate" => p("libvirt_cpi.libvirt.client.certificate"),
+    "ClientPrivateKey" => p("libvirt_cpi.libvirt.client.private_key"),
+    "CACertificate" => p("libvirt_cpi.libvirt.server_ca.certificate")
+  },
+  "Agent" => {
+    "Mbus" => p("libvirt_cpi.agent.mbus"),
+    "NTP"  => p("libvirt_cpi.agent.ntp"),
+
+    "Blobstore" => {
+      "Provider" => p("libvirt_cpi.agent.blobstore.provider"),
+      "Options"  => p("libvirt_cpi.agent.blobstore.options")
+    }
+  }
+}
+
+JSON.dump(config)
+
+%>
