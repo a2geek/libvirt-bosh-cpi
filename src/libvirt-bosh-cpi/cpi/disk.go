@@ -96,7 +96,7 @@ func (c CPI) attachDiskDevice(vmName, diskName, deviceName string) error {
 	var storageVol mgr.StorageVolXml
 	err = xml.Unmarshal([]byte(xmlstring), &storageVol)
 	if err != nil {
-		return bosherr.WrapError(err, "unable to unmarshal storage volume XML")
+		return bosherr.WrapErrorf(err, "unable to unmarshal storage volume XML: %s", xmlstring)
 	}
 	storageVol.TargetDevice = deviceName
 
