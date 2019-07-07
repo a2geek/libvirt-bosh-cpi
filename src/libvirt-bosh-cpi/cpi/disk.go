@@ -23,16 +23,16 @@ func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 }
 
 func (c CPI) discoverDisks(domainXML string) ([]apiv1.DiskCID, error) {
-	var disks []mgr.DiskDeviceXml
-	err := xml.Unmarshal([]byte(domainXML), &disks)
+	var devices mgr.DevicesXml
+	err := xml.Unmarshal([]byte(domainXML), &devices)
 	if err != nil {
-		return []apiv1.DiskCID{}, bosherr.WrapError(err, "unable to unmarshal disk XML")
+		return []apiv1.DiskCID{}, bosherr.WrapErrorf(err, "unable to unmarshal disk XML: '%s'", domainXML)
 	}
 
 	var diskcids []apiv1.DiskCID
-	for _, disk := range disks {
+	for _, disk := range devices.Disks {
 		if disk.Type == "file" && disk.Device == "disk" {
-			vol, err := c.manager.StorageVolLookupByPath(disk.SourceFile)
+			vol, err := c.manager.StorageVolLookupByPath(disk.Source.File)
 			if err != nil {
 				return []apiv1.DiskCID{}, bosherr.WrapError(err, "unable to locate storage volume")
 			}
@@ -85,6 +85,22 @@ func (c CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskH
 
 	diskHint := apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/vdc"})
 	return diskHint, nil
+}
+
+func (c CPI) attachBootDevice(vmName, diskName, deviceName string) error {
+	xmlstring, err := c.manager.StorageVolGetXMLByName(diskName)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to locate (boot) storage volume '%s'", diskName)
+	}
+
+	var storageVol mgr.StorageVolXml
+	err = xml.Unmarshal([]byte(xmlstring), &storageVol)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to unmarshal (boot) storage volume XML: %s", xmlstring)
+	}
+	storageVol.TargetDevice = deviceName
+
+	return c.manager.DomainAttachBootDisk(vmName, storageVol)
 }
 
 func (c CPI) attachDiskDevice(vmName, diskName, deviceName string) error {

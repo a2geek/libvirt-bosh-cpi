@@ -26,11 +26,20 @@ type Manager interface {
 	StorageVolResize(name string, capacity uint64) error
 }
 
+type DevicesXml struct {
+	Disks []DiskDeviceXml `xml:"devices>disk"`
+}
 type DiskDeviceXml struct {
-	Type       string `xml:"devices>disk>type,attr"`
-	Device     string `xml:"devices>disk>device,attr"`
-	SourceFile string `xml:"devices>disk>source>file,attr"`
-	TargetDev  string `xml:"devices>disk>target>dev,attr"`
+	Type   string              `xml:"type,attr"`
+	Device string              `xml:"device,attr"`
+	Source SourceDiskDeviceXml `xml:"source"`
+	Target TargetDiskDeviceXml `xml:"target"`
+}
+type SourceDiskDeviceXml struct {
+	File string `xml:"file,attr"`
+}
+type TargetDiskDeviceXml struct {
+	Dev string `xml:"dev,attr"`
 }
 
 type StorageVolXml struct {
