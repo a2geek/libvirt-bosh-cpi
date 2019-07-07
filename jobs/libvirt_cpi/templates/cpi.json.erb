@@ -13,12 +13,12 @@ config = {
   },
   "Connection" => {
     "Type" => p("libvirt_cpi.libvirt.type"),
-    "Socket" => p("libvirt_cpi.libvirt.socket"),
-    "Host" => p("libvirt_cpi.libvirt.host"),
-    "Port" => p("libvirt_cpi.libvirt.port"),
-    "ClientCertificate" => p("libvirt_cpi.libvirt.client.certificate"),
-    "ClientPrivateKey" => p("libvirt_cpi.libvirt.client.private_key"),
-    "CACertificate" => p("libvirt_cpi.libvirt.server_ca.certificate")
+    "Socket" => p("libvirt_cpi.libvirt.socket", ""),
+    "Host" => p("libvirt_cpi.libvirt.host", ""),
+    "Port" => p("libvirt_cpi.libvirt.port", ""),
+    "ClientCertificate" => p("libvirt_cpi.libvirt.client.certificate", ""),
+    "ClientPrivateKey" => p("libvirt_cpi.libvirt.client.private_key", ""),
+    "CACertificate" => p("libvirt_cpi.libvirt.server_ca.certificate", "")
   },
   "Agent" => {
     "Mbus" => p("libvirt_cpi.agent.mbus"),
