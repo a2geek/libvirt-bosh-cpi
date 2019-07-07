@@ -41,7 +41,8 @@ func (c CPI) CreateVMV2(
 	var props LibvirtVMCloudProps
 	err = cloudProps.As(&props)
 	ephemeralName := c.ephemeralDiskName(uuid)
-	_, err = c.manager.CreateStorageVolume(ephemeralName, props.EphemeralDisk)
+	ephemeralDiskInBytes := props.EphemeralDisk * bytesPerMegabyte
+	_, err = c.manager.CreateStorageVolume(ephemeralName, ephemeralDiskInBytes)
 	if err != nil {
 		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "creating ephemeral disk '%s'", ephemeralName)
 	}
