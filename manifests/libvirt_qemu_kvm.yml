@@ -2,7 +2,7 @@
 
 # This is for rendering within the VM once stood up
 - type: replace
-  path: /instance_groups/name=bosh/properties/libvirt_cpi/settings?
+  path: /instance_groups/name=bosh/properties/libvirt_cpi?/settings?
   value: &libvirt_settings
     storage_pool_name: ((libvirt_storage_pool_name))
     network_name: ((libvirt_network_name))
@@ -63,5 +63,5 @@
 
 # This is for initial standup of VM (bootstrap?)
 - type: replace
-  path: /cloud_provider/properties/libvirt_cpi/settings?
+  path: /cloud_provider/properties/libvirt_cpi?/settings?
   value: *libvirt_settings

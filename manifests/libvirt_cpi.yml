@@ -36,7 +36,7 @@
 
 # This is for rendering within the VM once stood up
 - type: replace
-  path: /instance_groups/name=bosh/properties/libvirt_cpi/agent?
+  path: /instance_groups/name=bosh/properties/libvirt_cpi?/agent?
   value:
     mbus: nats://nats:((nats_password))@((internal_ip)):4222
     blobstore:
@@ -48,7 +48,7 @@
 
 # This is for initial standup of VM (bootstrap?)
 - type: replace
-  path: /cloud_provider/properties/libvirt_cpi/agent?
+  path: /cloud_provider/properties/libvirt_cpi?/agent?
   value:
     mbus: "https://mbus:((mbus_bootstrap_password))@0.0.0.0:6868"
     blobstore:
