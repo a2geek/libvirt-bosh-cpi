@@ -54,7 +54,7 @@ func (c CPI) CreateVMV2(
 	}
 
 	// Attach disks
-	if err := c.attachDiskDevice(vmName, bootName, "vda"); err != nil {
+	if err := c.attachBootDevice(vmName, bootName, "vda"); err != nil {
 		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "attaching boot disk for vm '%s'", vmName)
 	}
 	if err := c.attachDiskDevice(vmName, ephemeralName, "vdb"); err != nil {

@@ -227,21 +227,41 @@ func (m libvirtManager) DomainGetXMLDescByName(name string) (string, error) {
 	return m.client.DomainGetXMLDesc(vm, 0)
 }
 
+func (m libvirtManager) DomainAttachBootDisk(vmName string, storageVol StorageVolXml) error {
+	vm, err := m.client.DomainLookupByName(vmName)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to find '%s' VM", vmName)
+	}
+
+	tmpl, err := template.New("attach-boot-device").Parse(m.settings.RootDeviceXml)
+	if err != nil {
+		return bosherr.WrapError(err, "unable to parse root device XML")
+	}
+
+	var xml bytes.Buffer
+	err = tmpl.Execute(&xml, storageVol)
+	if err != nil {
+		return bosherr.WrapError(err, "unable to generate root device XML template")
+	}
+
+	return m.client.DomainAttachDevice(vm, xml.String())
+}
+
 func (m libvirtManager) DomainAttachDisk(vmName string, storageVol StorageVolXml) error {
 	vm, err := m.client.DomainLookupByName(vmName)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "unable to find '%s' VM", vmName)
 	}
 
-	tmpl, err := template.New("attach-device").Parse(m.settings.DiskDeviceXml)
+	tmpl, err := template.New("attach-disk-device").Parse(m.settings.DiskDeviceXml)
 	if err != nil {
-		return bosherr.WrapError(err, "unable to parse storage volume XML")
+		return bosherr.WrapError(err, "unable to parse disk device XML")
 	}
 
 	var xml bytes.Buffer
 	err = tmpl.Execute(&xml, storageVol)
 	if err != nil {
-		return bosherr.WrapError(err, "unable to generate storage volume XML template")
+		return bosherr.WrapError(err, "unable to generate disk device XML template")
 	}
 
 	return m.client.DomainAttachDevice(vm, xml.String())
