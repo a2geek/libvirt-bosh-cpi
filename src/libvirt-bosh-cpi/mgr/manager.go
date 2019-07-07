@@ -26,15 +26,15 @@ type Manager interface {
 }
 
 type DiskDeviceXml struct {
-	Type       string `xml:"domain>devices>disk>type,attr"`
-	Device     string `xml:"domain>devices>disk>device,attr"`
-	SourceFile string `xml:"domain>devices>disk>source>file,attr"`
-	TargetDev  string `xml:"domain>devices>disk>target>dev,attr"`
+	Type       string `xml:"devices>disk>type,attr"`
+	Device     string `xml:"devices>disk>device,attr"`
+	SourceFile string `xml:"devices>disk>source>file,attr"`
+	TargetDev  string `xml:"devices>disk>target>dev,attr"`
 }
 
 type StorageVolXml struct {
-	Type         string `xml:"volume>type,attr"`
-	Name         string `xml:"volume>name"`
-	TargetPath   string `xml:"volume>target>path"`
+	Type         string `xml:"type,attr"`
+	Name         string `xml:"name"`
+	TargetPath   string `xml:"target>path"`
 	TargetDevice string `xml:"-"`
 }
