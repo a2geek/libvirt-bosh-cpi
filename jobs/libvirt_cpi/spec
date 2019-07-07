@@ -9,7 +9,7 @@ templates:
 packages:
 - libvirt_cpi
 
-properties: {}
+properties:
   # Libvirt Settings
   libvirt_cpi.settings.disk_device:
     description: "XML template for generating disk device"
