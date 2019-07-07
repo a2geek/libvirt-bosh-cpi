@@ -9,6 +9,9 @@ import (
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 )
 
+const bytesPerKilobyte = 1024
+const bytesPerMegabyte = bytesPerKilobyte * 1024
+
 func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 	name := c.vmName(cid.AsString())
 	xmlstring, err := c.manager.DomainGetXMLDescByName(name)
@@ -42,7 +45,7 @@ func (c CPI) discoverDisks(domainXML string) ([]apiv1.DiskCID, error) {
 
 }
 
-func (c CPI) CreateDisk(size int,
+func (c CPI) CreateDisk(sizeInMegabytes int,
 	cloudProps apiv1.DiskCloudProps, associatedVMCID *apiv1.VMCID) (apiv1.DiskCID, error) {
 
 	uuid, err := c.uuidGen.Generate()
@@ -50,9 +53,10 @@ func (c CPI) CreateDisk(size int,
 		return apiv1.DiskCID{}, bosherr.WrapError(err, "generating uuid")
 	}
 
+	sizeInBytes := sizeInMegabytes * bytesPerMegabyte
 	name := c.persistantDiskName(uuid)
 
-	_, err = c.manager.CreateStorageVolume(name, uint64(size))
+	_, err = c.manager.CreateStorageVolume(name, uint64(sizeInBytes))
 	if err != nil {
 		return apiv1.DiskCID{}, bosherr.WrapError(err, "creating disk")
 	}

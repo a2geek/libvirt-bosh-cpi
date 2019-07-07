@@ -12,14 +12,17 @@ import (
 )
 
 func NewLibvirtManager(client *libvirt.Libvirt, settings config.LibvirtSettings) (Manager, error) {
-	m := libvirtManager{
-		client:   client,
-		settings: settings,
+	pool, err := client.StoragePoolLookupByName(settings.StoragePoolName)
+	if err != nil {
+		return nil, bosherr.WrapErrorf(err, "unable to locate '%s' storage pool", settings.StoragePoolName)
 	}
 
-	if err := m.initialize(); err != nil {
-		return m, err
+	m := libvirtManager{
+		client:      client,
+		settings:    settings,
+		defaultPool: pool,
 	}
+
 	return m, nil
 }
 
@@ -29,30 +32,21 @@ type libvirtManager struct {
 	defaultPool libvirt.StoragePool
 }
 
-func (m libvirtManager) initialize() error {
-	pool, err := m.client.StoragePoolLookupByName(m.settings.StoragePoolName)
-	if err != nil {
-		return bosherr.WrapErrorf(err, "unable to locate '%s' storage pool", m.settings.StoragePoolName)
-	}
-	m.defaultPool = pool
-	return nil
-}
-
-func (m libvirtManager) CreateStorageVolume(name string, size uint64) (libvirt.StorageVol, error) {
-	xml, err := m.generateStorageVolumeXML(name, size)
+func (m libvirtManager) CreateStorageVolume(name string, sizeInBytes uint64) (libvirt.StorageVol, error) {
+	xml, err := m.generateStorageVolumeXML(name, sizeInBytes)
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to generate storage volume XML")
 	}
 
 	vol, err := m.client.StorageVolCreateXML(m.defaultPool, xml, 0)
 	if err != nil {
-		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to create storage volume")
+		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to create storage volume of a specific size")
 	}
 
 	return vol, nil
 }
 
-func (m libvirtManager) generateStorageVolumeXML(name string, size uint64) (string, error) {
+func (m libvirtManager) generateStorageVolumeXML(name string, sizeInBytes uint64) (string, error) {
 	tmpl, err := template.New("storage-volume").Parse(m.settings.StorageVolXml)
 	if err != nil {
 		return "", bosherr.WrapError(err, "unable to parse storage volume XML")
@@ -61,8 +55,8 @@ func (m libvirtManager) generateStorageVolumeXML(name string, size uint64) (stri
 	var xml bytes.Buffer
 	tvars := map[string]interface{}{
 		"Name": name,
-		"Size": size,
-		"Unit": "MiB",
+		"Size": sizeInBytes,
+		"Unit": "bytes",
 	}
 	err = tmpl.Execute(&xml, tvars)
 	if err != nil {
@@ -94,16 +88,16 @@ func (m libvirtManager) CreateDomain(name, uuid string, memory, cpu uint) (libvi
 }
 
 func (m libvirtManager) CreateStorageVolumeFromBytes(name string, data []byte) (libvirt.StorageVol, error) {
-	length := uint64(len(data))
+	sizeInBytes := uint64(len(data))
 
-	vol, err := m.CreateStorageVolume(name, length)
+	vol, err := m.CreateStorageVolume(name, sizeInBytes)
 	if err != nil {
-		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to create storage volume")
+		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to create storage volume from bytes")
 	}
 
 	r := bytes.NewReader(data)
 
-	err = m.client.StorageVolUpload(vol, r, 0, length, 0)
+	err = m.client.StorageVolUpload(vol, r, 0, sizeInBytes, 0)
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to upload stemcell")
 	}
@@ -133,10 +127,10 @@ func (m libvirtManager) ReadStorageVolumeBytes(name string) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func (m libvirtManager) CreateStorageVolumeFromImage(name, imagePath string, diskSize uint64) (libvirt.StorageVol, error) {
-	vol, err := m.CreateStorageVolume(name, diskSize)
+func (m libvirtManager) CreateStorageVolumeFromImage(name, imagePath string, diskSizeInBytes uint64) (libvirt.StorageVol, error) {
+	vol, err := m.CreateStorageVolume(name, diskSizeInBytes)
 	if err != nil {
-		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to create storage volume")
+		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to create storage volume from image")
 	}
 
 	r, err := os.Open(imagePath)
@@ -215,13 +209,13 @@ func (m libvirtManager) StorageVolDeleteByName(name string) error {
 	return nil
 }
 
-func (m libvirtManager) StorageVolResize(name string, capacity uint64) error {
+func (m libvirtManager) StorageVolResize(name string, capacityInBytes uint64) error {
 	vol, err := m.client.StorageVolLookupByName(m.defaultPool, name)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "unable to locate '%s' storage volume", name)
 	}
 
-	return m.client.StorageVolResize(vol, capacity, 0)
+	return m.client.StorageVolResize(vol, capacityInBytes, 0)
 }
 
 func (m libvirtManager) DomainGetXMLDescByName(name string) (string, error) {

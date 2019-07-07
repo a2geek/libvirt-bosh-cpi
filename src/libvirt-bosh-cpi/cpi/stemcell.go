@@ -29,7 +29,7 @@ func (c CPI) CreateStemcell(imagePath string, cloudProps apiv1.StemcellCloudProp
 
 	_, err = c.manager.CreateStorageVolumeFromImage(name, imagePath, props.Disk)
 	if err != nil {
-		return apiv1.StemcellCID{}, bosherr.WrapError(err, "unable to create storage volume")
+		return apiv1.StemcellCID{}, bosherr.WrapError(err, "unable to create stemcell storage volume")
 	}
 
 	return apiv1.NewStemcellCID(uuid), nil

@@ -7,9 +7,9 @@ import (
 type Manager interface {
 	CloneStorageVolumeFromStemcell(name, stemcell string) (libvirt.StorageVol, error)
 	CreateDomain(name, uuid string, memory, cpu uint) (libvirt.Domain, error)
-	CreateStorageVolume(name string, size uint64) (libvirt.StorageVol, error)
+	CreateStorageVolume(name string, sizeInBytes uint64) (libvirt.StorageVol, error)
 	CreateStorageVolumeFromBytes(name string, data []byte) (libvirt.StorageVol, error)
-	CreateStorageVolumeFromImage(name, imagePath string, size uint64) (libvirt.StorageVol, error)
+	CreateStorageVolumeFromImage(name, imagePath string, sizeInBytes uint64) (libvirt.StorageVol, error)
 	DomainAttachDisk(vmName string, storageVol StorageVolXml) error
 	DomainAttachManualNetworkInterface(dom libvirt.Domain, ip string) error
 	DomainDestroy(name string) error
