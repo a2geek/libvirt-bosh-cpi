@@ -31,7 +31,8 @@ func (c CPI) CreateVMV2(
 
 	// Clone stemcell for boot disk
 	bootName := c.bootDiskName(uuid)
-	_, err = c.manager.CloneStorageVolumeFromStemcell(bootName, stemcellCID.AsString())
+	stemcellName := c.stemcellName(stemcellCID.AsString())
+	_, err = c.manager.CloneStorageVolumeFromStemcell(bootName, stemcellName)
 	if err != nil {
 		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "cloning stemcell '%s'", bootName)
 	}
