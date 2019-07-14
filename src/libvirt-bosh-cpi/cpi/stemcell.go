@@ -1,8 +1,11 @@
 package cpi
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
@@ -27,7 +30,26 @@ func (c CPI) CreateStemcell(imagePath string, cloudProps apiv1.StemcellCloudProp
 
 	name := c.stemcellName(uuid)
 
-	_, err = c.manager.CreateStorageVolumeFromImage(name, imagePath, props.Disk)
+	f, err := os.Open(imagePath)
+	defer f.Close()
+	if err != nil {
+		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "open imagePath '%s'", imagePath)
+	}
+
+	gz, err := gzip.NewReader(f)
+	defer gz.Close()
+	if err != nil {
+		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "gunzip imagePath '%s'", imagePath)
+	}
+
+	// Assume first file is the one we want. Flexible or failure?
+	tf := tar.NewReader(gz)
+	_, err = tf.Next()
+	if err != nil {
+		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "tar.next for imagePath '%s'", imagePath)
+	}
+
+	_, err = c.manager.CreateStorageVolumeFromImage(name, tf, props.Disk)
 	if err != nil {
 		return apiv1.StemcellCID{}, bosherr.WrapError(err, "unable to create stemcell storage volume")
 	}

@@ -3,15 +3,16 @@ package mgr
 import (
 	"bufio"
 	"bytes"
+	"io"
 	"libvirt-bosh-cpi/config"
-	"os"
 	"text/template"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/digitalocean/go-libvirt"
 )
 
-func NewLibvirtManager(client *libvirt.Libvirt, settings config.LibvirtSettings) (Manager, error) {
+func NewLibvirtManager(client *libvirt.Libvirt, settings config.LibvirtSettings, logger boshlog.Logger) (Manager, error) {
 	pool, err := client.StoragePoolLookupByName(settings.StoragePoolName)
 	if err != nil {
 		return nil, bosherr.WrapErrorf(err, "unable to locate '%s' storage pool", settings.StoragePoolName)
@@ -20,6 +21,7 @@ func NewLibvirtManager(client *libvirt.Libvirt, settings config.LibvirtSettings)
 	m := libvirtManager{
 		client:      client,
 		settings:    settings,
+		logger:      logger,
 		defaultPool: pool,
 	}
 
@@ -29,6 +31,7 @@ func NewLibvirtManager(client *libvirt.Libvirt, settings config.LibvirtSettings)
 type libvirtManager struct {
 	client      *libvirt.Libvirt
 	settings    config.LibvirtSettings
+	logger      boshlog.Logger
 	defaultPool libvirt.StoragePool
 }
 
@@ -37,11 +40,13 @@ func (m libvirtManager) CreateStorageVolume(name string, sizeInBytes uint64) (li
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to generate storage volume XML")
 	}
+	m.logger.Debug("libvirt", "CreateStorageVolume XML=%s", xml)
 
 	vol, err := m.client.StorageVolCreateXML(m.defaultPool, xml, 0)
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to create storage volume of a specific size")
 	}
+	m.logger.Debug("libvirt", "CreateStorageVolume Volume=%v", vol)
 
 	return vol, nil
 }
@@ -83,8 +88,26 @@ func (m libvirtManager) CreateDomain(name, uuid string, memory, cpu uint) (libvi
 	if err != nil {
 		return libvirt.Domain{}, bosherr.WrapError(err, "unable to generate VM domain XML template")
 	}
+	m.logger.Debug("libvirt", "CreateDomain XML=%s", xml)
 
-	return m.client.DomainCreateXML(xml.String(), 0)
+	// return m.client.DomainCreateXML(xml.String(), 0)
+	return m.client.DomainDefineXML(xml.String())
+}
+
+func (m libvirtManager) DomainStart(dom libvirt.Domain) error {
+	active, err := m.client.DomainIsActive(dom)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to determine if '%s' is running", dom.Name)
+	}
+
+	if active == 0 {
+		err = m.client.DomainCreate(dom)
+		if err != nil {
+			return bosherr.WrapErrorf(err, "unable to start '%s'", dom.Name)
+		}
+	}
+
+	return nil
 }
 
 func (m libvirtManager) CreateStorageVolumeFromBytes(name string, data []byte) (libvirt.StorageVol, error) {
@@ -127,26 +150,13 @@ func (m libvirtManager) ReadStorageVolumeBytes(name string) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-func (m libvirtManager) CreateStorageVolumeFromImage(name, imagePath string, diskSizeInBytes uint64) (libvirt.StorageVol, error) {
+func (m libvirtManager) CreateStorageVolumeFromImage(name string, imageReader io.Reader, diskSizeInBytes uint64) (libvirt.StorageVol, error) {
 	vol, err := m.CreateStorageVolume(name, diskSizeInBytes)
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to create storage volume from image")
 	}
 
-	r, err := os.Open(imagePath)
-	if err != nil {
-		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to open stemcell file")
-	}
-	defer r.Close()
-
-	finfo, err := os.Stat(imagePath)
-	if err != nil {
-		return libvirt.StorageVol{}, bosherr.WrapError(err, "determining stemcell size")
-	}
-
-	imageSize := finfo.Size()
-
-	err = m.client.StorageVolUpload(vol, r, 0, uint64(imageSize), 0)
+	err = m.client.StorageVolUpload(vol, imageReader, 0, 0, 0)
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to upload stemcell")
 	}
@@ -244,7 +254,8 @@ func (m libvirtManager) DomainAttachBootDisk(vmName string, storageVol StorageVo
 		return bosherr.WrapError(err, "unable to generate root device XML template")
 	}
 
-	return m.client.DomainAttachDevice(vm, xml.String())
+	flags := libvirt.DomainAffectConfig
+	return m.client.DomainAttachDeviceFlags(vm, xml.String(), uint32(flags))
 }
 
 func (m libvirtManager) DomainAttachDisk(vmName string, storageVol StorageVolXml) error {
@@ -264,7 +275,8 @@ func (m libvirtManager) DomainAttachDisk(vmName string, storageVol StorageVolXml
 		return bosherr.WrapError(err, "unable to generate disk device XML template")
 	}
 
-	return m.client.DomainAttachDevice(vm, xml.String())
+	flags := libvirt.DomainAffectConfig
+	return m.client.DomainAttachDeviceFlags(vm, xml.String(), uint32(flags))
 }
 
 func (m libvirtManager) DomainDetachDisk(vmName string, storageVol StorageVolXml) error {
@@ -314,7 +326,8 @@ func (m libvirtManager) DomainAttachManualNetworkInterface(dom libvirt.Domain, i
 		return bosherr.WrapError(err, "unable to create manual network xml")
 	}
 
-	if err := m.client.DomainAttachDevice(dom, networkDeviceXML); err != nil {
+	flags := libvirt.DomainAffectConfig
+	if err := m.client.DomainAttachDeviceFlags(dom, networkDeviceXML, uint32(flags)); err != nil {
 		return bosherr.WrapErrorf(err, "unable to attach network device to domain '%s'", dom.Name)
 	}
 
@@ -332,7 +345,10 @@ func (m libvirtManager) DomainAttachManualNetworkInterface(dom libvirt.Domain, i
 		cmd := uint32(libvirt.NetworkUpdateCommandAddLast)
 		section := uint32(libvirt.NetworkSectionIPDhcpHost)
 		flags := libvirt.NetworkUpdateAffectLive
-		m.client.NetworkUpdate(net, cmd, section, -1, networkDhcpXML, flags)
+		err = m.client.NetworkUpdate(net, cmd, section, -1, networkDhcpXML, flags)
+		if err != nil {
+			bosherr.WrapErrorf(err, "unable to attach to network")
+		}
 	}
 
 	return nil

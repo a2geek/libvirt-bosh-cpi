@@ -1,5 +1,7 @@
 director_name: libvirt
 
+# NONE, ERROR, WARN, INFO, DEBUG
+cpi_log_level: DEBUG
 cpi_path: /home/rob/Documents/Source/libvirt-bosh-cpi/cpi
 
 internal_cidr: 192.168.123.1/24

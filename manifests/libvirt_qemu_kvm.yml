@@ -10,9 +10,9 @@
       <host name='{{.VmName}}' ip='{{.IpAddress}}'/>
     root_device: |
       <disk type='file' device='disk'>
-        <driver name='qemu' type='qcow2' cache='none'/>
+        <driver name='qemu' type='raw' cache='none'/>
         <source file='{{.TargetPath}}'/>
-        <target dev='{{.TargetDevice}}'/>
+        <target dev='{{.TargetDevice}}' bus='virtio'/>
       </disk>
     disk_device: |
       <disk type='file' device='disk'>
@@ -52,6 +52,9 @@
         <on_reboot>restart</on_reboot>
         <on_crash>restart</on_crash>
         <devices>
+          <serial type='pty'>
+            <target port='0'/>
+          </serial>
           <console type='pty'>
             <target type='serial' port='0'/>
           </console>

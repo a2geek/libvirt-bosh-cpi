@@ -1,6 +1,8 @@
 package mgr
 
 import (
+	"io"
+
 	"github.com/digitalocean/go-libvirt"
 )
 
@@ -9,7 +11,7 @@ type Manager interface {
 	CreateDomain(name, uuid string, memory, cpu uint) (libvirt.Domain, error)
 	CreateStorageVolume(name string, sizeInBytes uint64) (libvirt.StorageVol, error)
 	CreateStorageVolumeFromBytes(name string, data []byte) (libvirt.StorageVol, error)
-	CreateStorageVolumeFromImage(name, imagePath string, sizeInBytes uint64) (libvirt.StorageVol, error)
+	CreateStorageVolumeFromImage(name string, image io.Reader, sizeInBytes uint64) (libvirt.StorageVol, error)
 	DomainAttachBootDisk(vmName string, storageVol StorageVolXml) error
 	DomainAttachDisk(vmName string, storageVol StorageVolXml) error
 	DomainAttachManualNetworkInterface(dom libvirt.Domain, ip string) error
@@ -18,6 +20,7 @@ type Manager interface {
 	DomainGetXMLDescByName(name string) (string, error)
 	DomainLookupByName(name string) (libvirt.Domain, error)
 	DomainReboot(name string) error
+	DomainStart(dom libvirt.Domain) error
 	ReadStorageVolumeBytes(name string) ([]byte, error)
 	StorageVolDeleteByName(name string) error
 	StorageVolGetXMLByName(name string) (string, error)

@@ -74,6 +74,10 @@ func (c CPI) CreateVMV2(
 		}
 	}
 
+	if err := c.manager.DomainStart(dom); err != nil {
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "starting domain '%s'", vmName)
+	}
+
 	return apiv1.NewVMCID(vmName), networks, nil
 }
 

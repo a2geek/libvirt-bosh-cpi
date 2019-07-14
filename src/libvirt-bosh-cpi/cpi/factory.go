@@ -5,6 +5,7 @@ import (
 	"libvirt-bosh-cpi/mgr"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshuuid "github.com/cloudfoundry/bosh-utils/uuid"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
 	libvirt "github.com/digitalocean/go-libvirt"
@@ -13,10 +14,11 @@ import (
 // Factory implementation.
 type Factory struct {
 	config config.Config
+	logger boshlog.Logger
 }
 
-func NewFactory(config config.Config) Factory {
-	return Factory{config}
+func NewFactory(config config.Config, logger boshlog.Logger) Factory {
+	return Factory{config, logger}
 }
 
 func (f Factory) New(_ apiv1.CallContext) (apiv1.CPI, error) {
@@ -30,7 +32,7 @@ func (f Factory) New(_ apiv1.CallContext) (apiv1.CPI, error) {
 		return nil, bosherr.Errorf("failed to connect: %v", err)
 	}
 
-	m, err := mgr.NewLibvirtManager(l, f.config.Settings)
+	m, err := mgr.NewLibvirtManager(l, f.config.Settings, f.logger)
 	if err != nil {
 		return nil, bosherr.WrapError(err, "failed to create Libvirt manager")
 	}
@@ -39,6 +41,7 @@ func (f Factory) New(_ apiv1.CallContext) (apiv1.CPI, error) {
 		manager: m,
 		uuidGen: boshuuid.NewGenerator(),
 		config:  f.config,
+		logger:  f.logger,
 	}
 	return cpi, nil
 }

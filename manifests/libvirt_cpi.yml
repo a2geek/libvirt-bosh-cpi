@@ -45,6 +45,9 @@
         endpoint: http://((internal_ip)):25250
         user: agent
         password: ((blobstore_agent_password))
+- type: replace
+  path: /instance_groups/name=bosh/properties/libvirt_cpi?/log_level?
+  value: ((cpi_log_level))
 
 # This is for initial standup of VM (bootstrap?)
 - type: replace
@@ -55,6 +58,9 @@
       provider: local
       options:
         blobstore_path: /var/vcap/micro_bosh/data/cache
+- type: replace
+  path: /cloud_provider/properties/libvirt_cpi?/log_level?
+  value: ((cpi_log_level))
 
 # Enable the CPI level resizing of disks as the default (good idea or no?)
 - type: replace
