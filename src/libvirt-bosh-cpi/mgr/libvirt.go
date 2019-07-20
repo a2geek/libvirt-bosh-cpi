@@ -344,8 +344,8 @@ func (m libvirtManager) DomainAttachManualNetworkInterface(dom libvirt.Domain, i
 
 		cmd := uint32(libvirt.NetworkUpdateCommandAddLast)
 		section := uint32(libvirt.NetworkSectionIPDhcpHost)
-		flags := libvirt.NetworkUpdateAffectLive
-		err = m.client.NetworkUpdate(net, cmd, section, -1, networkDhcpXML, flags)
+		// NOTE: Seems to be a bug, argument #2 picts the section to modify. Guessing arg #3 is cmd!
+		err = m.client.NetworkUpdate(net, section, cmd, -1, networkDhcpXML, 0)
 		if err != nil {
 			bosherr.WrapErrorf(err, "unable to attach to network")
 		}
