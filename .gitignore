@@ -12,7 +12,11 @@ releases/**/*.tgz
 *.swp
 *~
 *#
-#*
+
+# Things we shouldn't commit
+bosh-creds.yml
+cpi
+state.json
 
 # Related to VS Code
 .vscode
