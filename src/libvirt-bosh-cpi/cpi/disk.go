@@ -4,9 +4,11 @@ import (
 	"encoding/xml"
 	"fmt"
 	"libvirt-bosh-cpi/mgr"
+	"strings"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
+	libvirt "github.com/digitalocean/go-libvirt"
 )
 
 const bytesPerKilobyte = 1024
@@ -14,19 +16,32 @@ const bytesPerMegabyte = bytesPerKilobyte * 1024
 
 func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 	name := c.vmName(cid.AsString())
-	xmlstring, err := c.manager.DomainGetXMLDescByName(name)
+
+	dom, err := c.manager.DomainLookupByName(name)
 	if err != nil {
-		return []apiv1.DiskCID{}, bosherr.WrapError(err, "unable to retrieve VM description")
+		return []apiv1.DiskCID{}, bosherr.WrapError(err, "unable to locate VM")
 	}
 
-	return c.discoverDisks(xmlstring)
+	allDisks, err := c.discoverDisks(dom)
+	if err != nil {
+		return []apiv1.DiskCID{}, bosherr.WrapError(err, "unable to discover disks")
+	}
+
+	// Keep Only persistent
+	var diskcids []apiv1.DiskCID
+	for _, diskcid := range allDisks {
+		if c.isPersistentDisk(diskcid.AsString()) {
+			diskcids = append(diskcids, diskcid)
+		}
+	}
+
+	return diskcids, nil
 }
 
-func (c CPI) discoverDisks(domainXML string) ([]apiv1.DiskCID, error) {
-	var devices mgr.DevicesXml
-	err := xml.Unmarshal([]byte(domainXML), &devices)
+func (c CPI) discoverDisks(dom libvirt.Domain) ([]apiv1.DiskCID, error) {
+	devices, err := c.manager.DomainListDevices(dom)
 	if err != nil {
-		return []apiv1.DiskCID{}, bosherr.WrapErrorf(err, "unable to unmarshal disk XML: '%s'", domainXML)
+		return []apiv1.DiskCID{}, bosherr.WrapErrorf(err, "unable to list devices")
 	}
 
 	var diskcids []apiv1.DiskCID
@@ -42,7 +57,6 @@ func (c CPI) discoverDisks(domainXML string) ([]apiv1.DiskCID, error) {
 	}
 
 	return diskcids, nil
-
 }
 
 func (c CPI) CreateDisk(sizeInMegabytes int,
@@ -122,15 +136,30 @@ func (c CPI) attachDiskDevice(vmName, diskName, deviceName string) error {
 func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 	xmlstring, err := c.manager.StorageVolGetXMLByName(diskCID.AsString())
 	if err != nil {
-		return bosherr.WrapErrorf(err, "unable to locate storage volume '%s'", diskCID.AsString())
+		return bosherr.WrapErrorf(err, "detach/unable to locate storage volume '%s'", diskCID.AsString())
 	}
 
 	var storageVol mgr.StorageVolXml
 	err = xml.Unmarshal([]byte(xmlstring), &storageVol)
 	if err != nil {
-		return bosherr.WrapError(err, "unable to unmarshal storage volume XML")
+		return bosherr.WrapError(err, "detach/unable to unmarshal storage volume XML")
 	}
-	storageVol.TargetDevice = "vdb"
+
+	dom, err := c.manager.DomainLookupByName(vmCID.AsString())
+	if err != nil {
+		return bosherr.WrapError(err, "detach/unable to locate vm")
+	}
+
+	devices, err := c.manager.DomainListDevices(dom)
+	if err != nil {
+		return bosherr.WrapError(err, "detach/unable to list vm devices")
+	}
+
+	for _, disk := range devices.Disks {
+		if strings.Contains(disk.Source.File, diskCID.AsString()) {
+			storageVol.TargetDevice = disk.Target.Dev
+		}
+	}
 
 	return c.manager.DomainDetachDisk(vmCID.AsString(), storageVol)
 }
@@ -162,4 +191,8 @@ func (c CPI) DeleteSnapshot(cid apiv1.SnapshotCID) error {
 
 func (c CPI) persistantDiskName(cid string) string {
 	return fmt.Sprintf("pdisk-%s", cid)
+}
+
+func (c CPI) isPersistentDisk(cid string) bool {
+	return strings.HasPrefix(cid, "pdisk-")
 }

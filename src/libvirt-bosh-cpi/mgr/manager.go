@@ -18,6 +18,7 @@ type Manager interface {
 	DomainDestroy(name string) error
 	DomainDetachDisk(vmName string, storageVol StorageVolXml) error
 	DomainGetXMLDescByName(name string) (string, error)
+	DomainListDevices(dom libvirt.Domain) (DevicesXml, error)
 	DomainLookupByName(name string) (libvirt.Domain, error)
 	DomainReboot(name string) error
 	DomainStart(dom libvirt.Domain) error

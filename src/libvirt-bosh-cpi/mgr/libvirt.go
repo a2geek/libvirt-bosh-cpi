@@ -3,8 +3,10 @@ package mgr
 import (
 	"bufio"
 	"bytes"
+	"encoding/xml"
 	"io"
 	"libvirt-bosh-cpi/config"
+	"libvirt-bosh-cpi/util"
 	"text/template"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
@@ -321,7 +323,12 @@ func (m libvirtManager) DomainDestroy(name string) error {
 }
 
 func (m libvirtManager) DomainAttachManualNetworkInterface(dom libvirt.Domain, ip string) error {
-	networkDeviceXML, err := m.createNetworkXML(m.settings.ManualNetworkInterfaceXml, dom, ip)
+	macaddr, err := util.GenerateRandomHardwareAddr()
+	if err != nil {
+		return bosherr.WrapError(err, "unable to generate mac address")
+	}
+
+	networkDeviceXML, err := m.createNetworkXML(m.settings.ManualNetworkInterfaceXml, dom, ip, macaddr.String())
 	if err != nil {
 		return bosherr.WrapError(err, "unable to create manual network xml")
 	}
@@ -332,7 +339,7 @@ func (m libvirtManager) DomainAttachManualNetworkInterface(dom libvirt.Domain, i
 	}
 
 	if m.settings.NetworkDhcpIpXml != "" {
-		networkDhcpXML, err := m.createNetworkXML(m.settings.NetworkDhcpIpXml, dom, ip)
+		networkDhcpXML, err := m.createNetworkXML(m.settings.NetworkDhcpIpXml, dom, ip, macaddr.String())
 		if err != nil {
 			return bosherr.WrapError(err, "unable to create network DHCP entry")
 		}
@@ -354,7 +361,7 @@ func (m libvirtManager) DomainAttachManualNetworkInterface(dom libvirt.Domain, i
 	return nil
 }
 
-func (m libvirtManager) createNetworkXML(xmlString string, dom libvirt.Domain, ip string) (string, error) {
+func (m libvirtManager) createNetworkXML(xmlString string, dom libvirt.Domain, ip, mac string) (string, error) {
 	tmpl, err := template.New("network-xml").Parse(xmlString)
 	if err != nil {
 		return "", bosherr.WrapError(err, "unable to parse network XML")
@@ -364,6 +371,7 @@ func (m libvirtManager) createNetworkXML(xmlString string, dom libvirt.Domain, i
 	tvars := map[string]interface{}{
 		"NetworkName": m.settings.NetworkName,
 		"IpAddress":   ip,
+		"MacAddress":  mac,
 		"VmName":      dom.Name,
 	}
 	err = tmpl.Execute(&xml, tvars)
@@ -372,4 +380,19 @@ func (m libvirtManager) createNetworkXML(xmlString string, dom libvirt.Domain, i
 	}
 
 	return xml.String(), nil
+}
+
+func (m libvirtManager) DomainListDevices(dom libvirt.Domain) (DevicesXml, error) {
+	xmlstring, err := m.DomainGetXMLDescByName(dom.Name)
+	if err != nil {
+		return DevicesXml{}, bosherr.WrapError(err, "unable to retrieve VM description")
+	}
+
+	var devices DevicesXml
+	err = xml.Unmarshal([]byte(xmlstring), &devices)
+	if err != nil {
+		return DevicesXml{}, bosherr.WrapErrorf(err, "unable to unmarshal devices XML: '%s'", xmlstring)
+	}
+
+	return devices, nil
 }

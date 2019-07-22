@@ -7,7 +7,7 @@
     storage_pool_name: ((libvirt_storage_pool_name))
     network_name: ((libvirt_network_name))
     network_dhcp_ip: |
-      <host name='{{.VmName}}' ip='{{.IpAddress}}'/>
+      <host name='{{.VmName}}' mac='{{.MacAddress}}' ip='{{.IpAddress}}'/>
     root_device: |
       <disk type='file' device='disk'>
         <driver name='qemu' type='raw' cache='none'/>
@@ -30,6 +30,7 @@
       <interface type='network'>
         <source network='{{.NetworkName}}'/>
         <target dev='vnet0'/>
+        <mac address='{{.MacAddress}}'/>
         <model type='virtio'/>
         <alias name='net0'/>
       </interface>

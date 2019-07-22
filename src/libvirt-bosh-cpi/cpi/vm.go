@@ -81,23 +81,13 @@ func (c CPI) CreateVMV2(
 	return apiv1.NewVMCID(vmName), networks, nil
 }
 
-// func makeMacAddress() (string, error) {
-// 	buf := make([]byte, 6)
-// 	_, err := rand.Read(buf)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	// Set the local bit
-// 	buf[0] |= 2
-
-// 	mac := fmt.Sprintf("%02x:%02x:%02x:%02x:%02x:%02x", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5])
-// 	return mac, err
-// }
-
 func (c CPI) DeleteVM(cid apiv1.VMCID) error {
-	domainXML, err := c.manager.DomainGetXMLDescByName(cid.AsString())
+	dom, err := c.manager.DomainLookupByName(cid.AsString())
+	if err != nil {
+		return bosherr.WrapError(err, "unable to locate VM")
+	}
 
-	diskcids, err := c.discoverDisks(domainXML)
+	diskcids, err := c.discoverDisks(dom)
 	if err != nil {
 		return bosherr.WrapError(err, "discovering attached disks")
 	}
