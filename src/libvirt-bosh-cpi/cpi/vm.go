@@ -2,6 +2,7 @@ package cpi
 
 import (
 	"fmt"
+	"libvirt-bosh-cpi/agentmgr"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
@@ -38,6 +39,7 @@ func (c CPI) CreateVMV2(
 	}
 
 	// Create ephemeral disk
+	// BUG? Always creating the ephemeral disk.
 	var props LibvirtVMCloudProps
 	err = cloudProps.As(&props)
 	ephemeralName := c.ephemeralDiskName(uuid)
@@ -45,6 +47,29 @@ func (c CPI) CreateVMV2(
 	_, err = c.manager.CreateStorageVolume(ephemeralName, ephemeralDiskInBytes)
 	if err != nil {
 		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "creating ephemeral disk '%s'", ephemeralName)
+	}
+
+	// AgentEnv
+	vmCID := apiv1.NewVMCID(vmName)
+	agentEnvFactory := apiv1.NewAgentEnvFactory()
+	agentEnv := agentEnvFactory.ForVM(agentID, vmCID, networks, env, c.config.Agent)
+	agentEnv.AttachSystemDisk(apiv1.NewDiskHintFromString("/dev/vda"))
+	agentEnv.AttachEphemeralDisk(apiv1.NewDiskHintFromString("/dev/vdb"))
+
+	// Create config disk
+	agentMgr := agentmgr.NewAgentManager()
+	err = agentMgr.Update(agentEnv)
+	if err != nil {
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapError(err, "creating config")
+	}
+	configName := c.configDiskName(uuid)
+	configDiskInBytes, err := agentMgr.ToBytes()
+	if err != nil {
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "prepping config disk '%s'", configName)
+	}
+	_, err = c.manager.CreateStorageVolumeFromBytes(configName, configDiskInBytes)
+	if err != nil {
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "creating ephemeral disk '%s'", configName)
 	}
 
 	// Create VM
@@ -59,6 +84,9 @@ func (c CPI) CreateVMV2(
 	}
 	if err := c.attachDiskDevice(vmName, ephemeralName, "vdb"); err != nil {
 		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "attaching ephemeral disk for vm '%s'", vmName)
+	}
+	if err := c.attachDiskDevice(vmName, configName, "vdc"); err != nil {
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "attaching config disk for vm '%s'", vmName)
 	}
 
 	// Create network interface XML
@@ -78,7 +106,7 @@ func (c CPI) CreateVMV2(
 		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "starting domain '%s'", vmName)
 	}
 
-	return apiv1.NewVMCID(vmName), networks, nil
+	return vmCID, networks, nil
 }
 
 func (c CPI) DeleteVM(cid apiv1.VMCID) error {
@@ -143,6 +171,10 @@ func (c CPI) bootDiskName(cid string) string {
 
 func (c CPI) ephemeralDiskName(cid string) string {
 	return fmt.Sprintf("edisk-%s", cid)
+}
+
+func (c CPI) configDiskName(cid string) string {
+	return fmt.Sprintf("cdisk-%s", cid)
 }
 
 func (c CPI) vmName(cid string) string {

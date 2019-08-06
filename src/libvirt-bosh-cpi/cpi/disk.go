@@ -92,12 +92,12 @@ func (c CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 }
 
 func (c CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskHint, error) {
-	err := c.attachDiskDevice(vmCID.AsString(), diskCID.AsString(), "vdc")
+	err := c.attachDiskDevice(vmCID.AsString(), diskCID.AsString(), "vdd")
 	if err != nil {
 		return apiv1.NewDiskHintFromString(""), bosherr.WrapErrorf(err, "attaching disk '%s' to vm '%s'", diskCID.AsString(), vmCID.AsString())
 	}
 
-	diskHint := apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/vdc"})
+	diskHint := apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/vdd"})
 	return diskHint, nil
 }
 
