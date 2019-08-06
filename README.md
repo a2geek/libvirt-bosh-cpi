@@ -5,6 +5,27 @@ A Go BOSH CPI for the [libvirt virtualization API](https://libvirt.org/).
 
 Most definitely a work in progress. Unable to stand up a BOSH Director at this time!
 
+Known TODOs:
+* Agent configuration needs to be setup. Working on setting up a configuration disk, currently hardcoded to the [OpenStack settings](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_openstack_agent_settings/apply.sh):
+  ```
+  {
+    "Type": "ConfigDrive",
+    "DiskPaths": [
+      "/dev/disk/by-label/CONFIG-2",
+      "/dev/disk/by-label/config-2"
+    ],
+    "MetaDataPath": "ec2/latest/meta-data.json",
+    "UserDataPath": "ec2/latest/user-data"
+  },
+  ```
+* Network is currently assigned via DHCP in the Libvirt settings. Investigate if this can be altered to be configured by the agent.
+* Disks are assigned statically; thus more than one of a type will fail. Current scheme:
+  * `/dev/vda`: boot disk
+  * `/dev/vdb`: ephemeral disk (optional?)
+  * `/dev/vdc`: config disk
+  * `/dev/vdd`: persistent disk (optional).
+* Go dependencies are a hash. Need to get changes in supporting libraries merged. Getting `go mod` to function in a BOSH release would be great (`src` throws it off).
+
 ## Tinkering
 
 Expect things to not work. This is all setup for Ubuntu Bionic (18.04) using QEMU/KVM for the Libvirt virtualization component.
