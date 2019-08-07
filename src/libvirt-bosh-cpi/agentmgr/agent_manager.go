@@ -1,8 +1,6 @@
 package agentmgr
 
 import (
-	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"os"
 
@@ -22,24 +20,37 @@ type AgentManager interface {
 }
 
 // NewAgentManager will initalize a new config drive for AgentEnv settings
-func NewAgentManager() AgentManager {
+func NewAgentManager() (AgentManager, error) {
 	// BUG: Not handling error
-	name, _ := tempFileName()
+	name, err := tempFileName()
+	if err != nil {
+		return nil, bosherr.WrapError(err, "unable to generate agent config disk temp file")
+	}
 	mgr := configDriveManager{
 		diskFileName: name,
 	}
-	mgr.initialize()
-	return mgr
+	err = mgr.createDisk()
+	if err != nil {
+		return nil, bosherr.WrapError(err, "unable to create config disk")
+	}
+	return mgr, nil
 }
 
 // NewAgentManagerFromData will allow AgentEnv settings updates on an existing config drive
-func NewAgentManagerFromData(data []byte) AgentManager {
+func NewAgentManagerFromData(data []byte) (AgentManager, error) {
 	// BUG: Not handling error
-	name, _ := tempFileName()
-	ioutil.WriteFile(name, data, 0666)
-	return configDriveManager{
+	name, err := tempFileName()
+	if err != nil {
+		return nil, bosherr.WrapError(err, "unable to generate agent config disk temp file")
+	}
+	err = ioutil.WriteFile(name, data, 0666)
+	if err != nil {
+		return nil, bosherr.WrapError(err, "unable to store config disk to temp file")
+	}
+	mgr := configDriveManager{
 		diskFileName: name,
 	}
+	return mgr, nil
 }
 
 type configDriveManager struct {
@@ -67,27 +78,18 @@ func tempFileName() (string, error) {
 	return name, nil
 }
 
-func (c configDriveManager) initialize() error {
-	_, err := os.Stat(c.diskFileName)
-	if !os.IsNotExist(err) {
-		return errors.New("cannot initialize a working file that already exists")
-	} else if err != nil {
-		return err
-	}
-
-	err = c.createDisk()
-	if err != nil {
-		return bosherr.WrapError(err, "unable to create raw config disk image")
-	}
-
-	return nil
-}
-
 func (c configDriveManager) Update(agentEnv apiv1.AgentEnv) error {
 	disk, err := diskfs.Open(c.diskFileName)
 	if err != nil {
 		return err
 	}
+
+	// The partition table doesn't appear to get populated? Manually populating it.
+	table, err := disk.GetPartitionTable()
+	if err != nil {
+		return err
+	}
+	disk.Table = table
 
 	fs, err := disk.GetFilesystem(1)
 	if err != nil {
@@ -95,12 +97,17 @@ func (c configDriveManager) Update(agentEnv apiv1.AgentEnv) error {
 	}
 
 	// FIXME?
-	err = c.writeFile(fs, metaDataPath, agentEnv)
+	content, err := agentEnv.AsBytes()
 	if err != nil {
 		return err
 	}
 
-	err = c.writeFile(fs, userDataPath, agentEnv)
+	err = c.writeFile(fs, metaDataPath, content)
+	if err != nil {
+		return err
+	}
+
+	err = c.writeFile(fs, userDataPath, content)
 	if err != nil {
 		return err
 	}
@@ -108,18 +115,13 @@ func (c configDriveManager) Update(agentEnv apiv1.AgentEnv) error {
 	return nil
 }
 
-func (c configDriveManager) writeFile(fs filesystem.FileSystem, path string, contents interface{}) error {
+func (c configDriveManager) writeFile(fs filesystem.FileSystem, path string, contents []byte) error {
 	rw, err := fs.OpenFile(path, os.O_CREATE|os.O_RDWR)
 	if err != nil {
 		return err
 	}
 
-	data, err := json.Marshal(contents)
-	if err != nil {
-		return err
-	}
-
-	_, err = rw.Write(data)
+	_, err = rw.Write(contents)
 	if err != nil {
 		return err
 	}

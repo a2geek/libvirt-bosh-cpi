@@ -25,6 +25,7 @@ Known TODOs:
   * `/dev/vdc`: config disk
   * `/dev/vdd`: persistent disk (optional).
 * Go dependencies are a hash. Need to get changes in supporting libraries merged. Getting `go mod` to function in a BOSH release would be great (`src` throws it off).
+* Somehow the `diskfs` references aren't committing with the source, so it will not help anyone. Need to resolve and/or get dependencies to work properly.
 
 ## Tinkering
 
