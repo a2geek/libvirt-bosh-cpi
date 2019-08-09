@@ -1,0 +1,34 @@
+# github.com/bmatcuk/doublestar v1.1.5
+github.com/bmatcuk/doublestar
+# github.com/charlievieth/fs v0.0.0-20170613215519-7dc373669fa1
+github.com/charlievieth/fs
+# github.com/cloudfoundry/bosh-utils v0.0.0-20190803100152-d286f594c8d9
+github.com/cloudfoundry/bosh-utils/errors
+github.com/cloudfoundry/bosh-utils/system
+github.com/cloudfoundry/bosh-utils/logger
+github.com/cloudfoundry/bosh-utils/uuid
+# github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd
+github.com/cppforlife/bosh-cpi-go/apiv1
+github.com/cppforlife/bosh-cpi-go/rpc
+# github.com/digitalocean/go-libvirt v0.0.0-20190715144809-7b622097a793
+github.com/digitalocean/go-libvirt
+github.com/digitalocean/go-libvirt/internal/constants
+github.com/digitalocean/go-libvirt/internal/go-xdr/xdr2
+# github.com/diskfs/go-diskfs v0.0.0-20190517155712-1190dcf1ff31 => github.com/a2geek/go-diskfs v0.0.0-20190806023132-94435d85fe83
+github.com/diskfs/go-diskfs
+github.com/diskfs/go-diskfs/disk
+github.com/diskfs/go-diskfs/filesystem
+github.com/diskfs/go-diskfs/partition/mbr
+github.com/diskfs/go-diskfs/filesystem/fat32
+github.com/diskfs/go-diskfs/filesystem/iso9660
+github.com/diskfs/go-diskfs/partition
+github.com/diskfs/go-diskfs/util
+github.com/diskfs/go-diskfs/partition/gpt
+# github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
+github.com/nu7hatch/gouuid
+# github.com/pkg/errors v0.8.1
+github.com/pkg/errors
+# github.com/satori/go.uuid v1.2.0
+github.com/satori/go.uuid
+# golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa
+golang.org/x/sys/unix

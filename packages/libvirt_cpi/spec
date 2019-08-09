@@ -5,7 +5,4 @@ dependencies:
 - golang-1.12-linux
 
 files:
-- "**/*.go"
-- "**/*.c"
-- "**/*.h"
-- "**/*.s"
+- "**/*"

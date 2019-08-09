@@ -1,6 +1,7 @@
 set -ex
 
-if [ -z "${BOSH_PACKAGES_DIR}" ]; then
+if [ -z "${BOSH_PACKAGES_DIR}" ]
+then
 	pkg_dir=$(readlink -nf /var/vcap/packages/golang-1.12-linux)
 else
 	pkg_dir=${BOSH_PACKAGES_DIR}/golang-1.12-linux
@@ -8,14 +9,16 @@ fi
 
 source ${pkg_dir}/bosh/compile.env
 
-mkdir ../src && cp -a * ../src/ && mv ../src ./src
-
 if [ ! -d ${BOSH_INSTALL_TARGET}/bin ]
 then
   mkdir ${BOSH_INSTALL_TARGET}/bin
 fi
 
-mkdir ${BOSH_COMPILE_TARGET}/gocache
-export GOCACHE=${BOSH_COMPILE_TARGET}/gocache
+# Seems that Go modules really needs to be based off of HOME, otherwise the Go modules are deemed invalid.
+# The error this averts is: "$GOPATH/go.mod exists but should not"
+export HOME=$PWD/.home
+mkdir -p $HOME
+unset GOCACHE
+unset GOPATH
 
-go build -o ${BOSH_INSTALL_TARGET}/bin/cpi src/libvirt-bosh-cpi/main/main.go
+go build -mod=vendor -o ${BOSH_INSTALL_TARGET}/bin/cpi main/main.go
