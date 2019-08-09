@@ -6,6 +6,7 @@ A Go BOSH CPI for the [libvirt virtualization API](https://libvirt.org/).
 Most definitely a work in progress. Unable to stand up a BOSH Director at this time!
 
 Known TODOs:
+* Need to pull in commit that fixes the [read-only](https://github.com/diskfs/go-diskfs/issues/20) bug.
 * Agent configuration needs to be setup. Working on setting up a configuration disk, currently hardcoded to the [OpenStack settings](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_openstack_agent_settings/apply.sh):
   ```
   {
@@ -24,8 +25,6 @@ Known TODOs:
   * `/dev/vdb`: ephemeral disk (optional?)
   * `/dev/vdc`: config disk
   * `/dev/vdd`: persistent disk (optional).
-* Go dependencies are a hash. Need to get changes in supporting libraries merged. Getting `go mod` to function in a BOSH release would be great (`src` throws it off).
-* Somehow the `diskfs` references aren't committing with the source, so it will not help anyone. Need to resolve and/or get dependencies to work properly.
 
 ## Tinkering
 
@@ -131,7 +130,7 @@ virsh # exit
 
 ## Developing
 
-Since the packaging is a bit wonky in this setup (call it _vendoring_), the `GOPATH` needs to be set to the project root. 
+> Note entirely updated for Go modules at this time!
 
 In VS Code, the `settings.json` file will contain something like:
 
@@ -141,9 +140,9 @@ In VS Code, the `settings.json` file will contain something like:
 }
 ```
 
-At the command-line, navigate to the source directory and then set the `GOPATH` and compile:
+At the command-line, from the source directory a compile can be done:
 
 ```
-$ export GOPATH=$PWD
-$ go build src/libvirt-bosh-cpi/main/main.go 
+$ cd src
+$ go build -o ../main main/main.go
 ```
