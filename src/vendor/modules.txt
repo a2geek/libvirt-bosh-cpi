@@ -14,7 +14,7 @@ github.com/cppforlife/bosh-cpi-go/rpc
 github.com/digitalocean/go-libvirt
 github.com/digitalocean/go-libvirt/internal/constants
 github.com/digitalocean/go-libvirt/internal/go-xdr/xdr2
-# github.com/diskfs/go-diskfs v0.0.0-20190517155712-1190dcf1ff31 => github.com/a2geek/go-diskfs v0.0.0-20190806023132-94435d85fe83
+# github.com/diskfs/go-diskfs v0.0.0-20190517155712-1190dcf1ff31 => github.com/a2geek/go-diskfs v0.0.0-20190810191223-f09edeb3e6a4
 github.com/diskfs/go-diskfs
 github.com/diskfs/go-diskfs/disk
 github.com/diskfs/go-diskfs/filesystem

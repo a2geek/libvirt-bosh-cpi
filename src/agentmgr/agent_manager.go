@@ -165,7 +165,7 @@ func (c configDriveManager) createDisk() error {
 	}
 	err = image.Partition(table)
 
-	fs, err := image.CreateFilesystemSpecial(disk.FilesystemSpec{
+	fs, err := image.CreateFilesystem(disk.FilesystemSpec{
 		Partition:   1,
 		FSType:      filesystem.TypeFat32,
 		VolumeLabel: "config-2",

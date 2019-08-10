@@ -1,5 +1,5 @@
-github.com/a2geek/go-diskfs v0.0.0-20190806023132-94435d85fe83 h1:/wFBXmbX3nPo2FWf7dK9pW6P5m1KmgTReBk4GBYFOsU=
-github.com/a2geek/go-diskfs v0.0.0-20190806023132-94435d85fe83/go.mod h1:bVPd3NNghsBHpMblFueld3r+7UCUYjMYfZV0q2iwlak=
+github.com/a2geek/go-diskfs v0.0.0-20190810191223-f09edeb3e6a4 h1:i3qitMLB4kQrHmNbwyLZ2RQzEvnqGd3vzV/MgJF0/OE=
+github.com/a2geek/go-diskfs v0.0.0-20190810191223-f09edeb3e6a4/go.mod h1:LT4bxbK8fFLiZNS/PdWQdl5isfIGutXajgPNuaP74xs=
 github.com/bmatcuk/doublestar v1.1.5 h1:2bNwBOmhyFEFcoB3tGvTD5xanq+4kyOZlB8wFYbMjkk=
 github.com/bmatcuk/doublestar v1.1.5/go.mod h1:wiQtGV+rzVYxB7WIlirSN++5HPtPlXEo9MEoZQC/PmE=
 github.com/charlievieth/fs v0.0.0-20170613215519-7dc373669fa1 h1:vTlpHKxJqykyKdW9bkrDJNWeKNuSIAJ0TP/K4lRsz/Q=

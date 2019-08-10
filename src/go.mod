@@ -13,9 +13,7 @@ require (
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/pkg/errors v0.8.1
-	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/stretchr/testify v1.3.0 // indirect
-	golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa // indirect
 )
 
-replace github.com/diskfs/go-diskfs => github.com/a2geek/go-diskfs v0.0.0-20190806023132-94435d85fe83
+replace github.com/diskfs/go-diskfs => github.com/a2geek/go-diskfs v0.0.0-20190810191223-f09edeb3e6a4
