@@ -16,6 +16,7 @@ type Config struct {
 	ConnectFactory connection.Factory
 	Connection     connection.Config
 	Settings       LibvirtSettings
+	VMPublicKey    string
 }
 type LibvirtSettings struct {
 	DiskDeviceXml             string

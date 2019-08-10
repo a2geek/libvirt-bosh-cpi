@@ -28,7 +28,8 @@ config = {
       "Provider" => p("libvirt_cpi.agent.blobstore.provider"),
       "Options"  => p("libvirt_cpi.agent.blobstore.options")
     }
-  }
+  },
+  "VMPublicKey" => p("libvirt_cpi.vm_ssh_key.public_key")
 }
 
 JSON.dump(config)

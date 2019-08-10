@@ -66,3 +66,17 @@
 - type: replace
   path: /instance_groups/name=bosh/properties/director/enable_cpi_resize_disk?
   value: true
+
+- type: replace
+  path: /variables/-
+  value:
+    name: vm_ssh_key
+    type: ssh
+# This is for rendering within the VM once stood up
+- type: replace
+  path: /instance_groups/name=bosh/properties/libvirt_cpi?/vm_ssh_key?
+  value: ((vm_ssh_key))
+# This is for initial standup of VM (bootstrap?)
+- type: replace
+  path: /cloud_provider/properties/libvirt_cpi?/vm_ssh_key?
+  value: ((vm_ssh_key))

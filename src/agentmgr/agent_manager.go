@@ -1,6 +1,7 @@
 package agentmgr
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"os"
 
@@ -20,7 +21,7 @@ type AgentManager interface {
 }
 
 // NewAgentManager will initalize a new config drive for AgentEnv settings
-func NewAgentManager() (AgentManager, error) {
+func NewAgentManager(vmPublicKey string) (AgentManager, error) {
 	// BUG: Not handling error
 	name, err := tempFileName()
 	if err != nil {
@@ -28,6 +29,7 @@ func NewAgentManager() (AgentManager, error) {
 	}
 	mgr := configDriveManager{
 		diskFileName: name,
+		vmPublicKey:  vmPublicKey,
 	}
 	err = mgr.createDisk()
 	if err != nil {
@@ -37,7 +39,7 @@ func NewAgentManager() (AgentManager, error) {
 }
 
 // NewAgentManagerFromData will allow AgentEnv settings updates on an existing config drive
-func NewAgentManagerFromData(data []byte) (AgentManager, error) {
+func NewAgentManagerFromData(vmPublicKey string, data []byte) (AgentManager, error) {
 	// BUG: Not handling error
 	name, err := tempFileName()
 	if err != nil {
@@ -49,12 +51,20 @@ func NewAgentManagerFromData(data []byte) (AgentManager, error) {
 	}
 	mgr := configDriveManager{
 		diskFileName: name,
+		vmPublicKey:  vmPublicKey,
 	}
 	return mgr, nil
 }
 
+// These are "stoken" out of the Bosh Agent itself.
+type metadataContentsType struct {
+	PublicKeys map[string]publicKeyType `json:"public-keys"`
+}
+type publicKeyType map[string]string
+
 type configDriveManager struct {
 	diskFileName string
+	vmPublicKey  string
 }
 
 const configPath = "/ec2/latest"
@@ -96,13 +106,26 @@ func (c configDriveManager) Update(agentEnv apiv1.AgentEnv) error {
 		return err
 	}
 
-	// The AgentEnv appears to be what goes into userdata
-	userDataContent, err := agentEnv.AsBytes()
+	// Metadata contains the SSH key
+	metadata := metadataContentsType{
+		PublicKeys: map[string]publicKeyType{
+			"0": publicKeyType{
+				"openssh-key": c.vmPublicKey,
+			},
+		},
+	}
+	metaDataContent, err := json.Marshal(metadata)
 	if err != nil {
 		return err
 	}
 
-	err = c.writeFile(fs, metaDataPath, []byte("{}"))
+	err = c.writeFile(fs, metaDataPath, metaDataContent)
+	if err != nil {
+		return err
+	}
+
+	// The AgentEnv appears to be what goes into userdata
+	userDataContent, err := agentEnv.AsBytes()
 	if err != nil {
 		return err
 	}
