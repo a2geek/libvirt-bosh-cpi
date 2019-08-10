@@ -96,18 +96,18 @@ func (c configDriveManager) Update(agentEnv apiv1.AgentEnv) error {
 		return err
 	}
 
-	// FIXME?
-	content, err := agentEnv.AsBytes()
+	// The AgentEnv appears to be what goes into userdata
+	userDataContent, err := agentEnv.AsBytes()
 	if err != nil {
 		return err
 	}
 
-	err = c.writeFile(fs, metaDataPath, content)
+	err = c.writeFile(fs, metaDataPath, []byte("{}"))
 	if err != nil {
 		return err
 	}
 
-	err = c.writeFile(fs, userDataPath, content)
+	err = c.writeFile(fs, userDataPath, userDataContent)
 	if err != nil {
 		return err
 	}
