@@ -134,16 +134,6 @@ virsh # exit
 
 ## Developing
 
-> Note entirely updated for Go modules at this time!
-
-In VS Code, the `settings.json` file will contain something like:
-
-```
-{
-    "go.gopath": "/path/to/the/directory/libvirt-bosh-cpi"
-}
-```
-
 At the command-line, from the source directory a compile can be done:
 
 ```
