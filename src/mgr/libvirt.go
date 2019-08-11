@@ -256,8 +256,7 @@ func (m libvirtManager) DomainAttachBootDisk(vmName string, storageVol StorageVo
 		return bosherr.WrapError(err, "unable to generate root device XML template")
 	}
 
-	flags := libvirt.DomainAffectConfig
-	return m.client.DomainAttachDeviceFlags(vm, xml.String(), uint32(flags))
+	return m.client.DomainAttachDeviceFlags(vm, xml.String(), 0)
 }
 
 func (m libvirtManager) DomainAttachDisk(vmName string, storageVol StorageVolXml) error {
@@ -277,8 +276,7 @@ func (m libvirtManager) DomainAttachDisk(vmName string, storageVol StorageVolXml
 		return bosherr.WrapError(err, "unable to generate disk device XML template")
 	}
 
-	flags := libvirt.DomainAffectConfig
-	return m.client.DomainAttachDeviceFlags(vm, xml.String(), uint32(flags))
+	return m.client.DomainAttachDeviceFlags(vm, xml.String(), 0)
 }
 
 func (m libvirtManager) DomainDetachDisk(vmName string, storageVol StorageVolXml) error {
@@ -333,8 +331,7 @@ func (m libvirtManager) DomainAttachManualNetworkInterface(dom libvirt.Domain, i
 		return bosherr.WrapError(err, "unable to create manual network xml")
 	}
 
-	flags := libvirt.DomainAffectConfig
-	if err := m.client.DomainAttachDeviceFlags(dom, networkDeviceXML, uint32(flags)); err != nil {
+	if err := m.client.DomainAttachDeviceFlags(dom, networkDeviceXML, 0); err != nil {
 		return bosherr.WrapErrorf(err, "unable to attach network device to domain '%s'", dom.Name)
 	}
 
