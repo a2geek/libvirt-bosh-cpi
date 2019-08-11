@@ -3,11 +3,14 @@ A Go BOSH CPI for the [libvirt virtualization API](https://libvirt.org/).
 
 ## Status
 
-Most definitely a work in progress. Unable to stand up a BOSH Director at this time!
+BOSH director can be stood up.
+
+Known defects:
+* VMs, when deleted, are only shut down. (Disks are detached and removed.)
+* If a VM has a persistent disk attached when it is deleted, that disk also gets deleted. Code patch in place but untested. Likely only an issue when standing up the BOSH director itself(?) since the detach disk method should be called by BOSH itself.
 
 Known TODOs:
-* Need to pull in commit that fixes the [read-only](https://github.com/diskfs/go-diskfs/issues/20) bug.
-* Agent configuration needs to be setup. Working on setting up a configuration disk, currently hardcoded to the [OpenStack settings](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_openstack_agent_settings/apply.sh):
+* Agent (dynamic) configuration needs to be setup. Working on setting up a configuration disk, currently hardcoded to the [OpenStack settings](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_openstack_agent_settings/apply.sh):
   ```
   {
     "Type": "ConfigDrive",
@@ -25,6 +28,7 @@ Known TODOs:
   * `/dev/vdb`: ephemeral disk (optional?)
   * `/dev/vdc`: config disk
   * `/dev/vdd`: persistent disk (optional).
+* Current setup connects to Unix socket. Only good while developing! Need to swap directions and prove that the TLS factory works. Also need to find the Libvirt documentation on how to configure for future reference.
 
 ## Tinkering
 
