@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"time"
 )
 
 type tlsFactory struct {
@@ -30,13 +31,20 @@ func (f tlsFactory) Connect() (net.Conn, error) {
 	}
 
 	roots := x509.NewCertPool()
-	roots.AppendCertsFromPEM([]byte(f.CACertificate))
+	if !roots.AppendCertsFromPEM([]byte(f.CACertificate)) {
+		// We expect at least one to be added
+		return nil, errors.New("root certificates were not added")
+	}
 
 	cfg := &tls.Config{
 		Certificates: []tls.Certificate{cert},
 		RootCAs:      roots,
 	}
 
+	dialer := &net.Dialer{
+		Timeout: 2 * time.Second,
+	}
+
 	connectString := fmt.Sprintf("%s:%s", f.Host, f.Port)
-	return tls.Dial("tcp", connectString, cfg)
+	return tls.DialWithDialer(dialer, "tcp", connectString, cfg)
 }
