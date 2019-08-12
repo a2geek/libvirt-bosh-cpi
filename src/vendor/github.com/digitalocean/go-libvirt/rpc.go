@@ -519,10 +519,13 @@ func eventDecoder(buf []byte, e interface{}) error {
 func pktlen(r io.Reader) (uint32, error) {
 	buf := make([]byte, constants.PacketLengthSize)
 
-	// read exactly constants.PacketLengthSize bytes
-	_, err := io.ReadFull(r, buf)
-	if err != nil {
-		return 0, err
+	for n := 0; n < cap(buf); {
+		nn, err := r.Read(buf)
+		if err != nil {
+			return 0, err
+		}
+
+		n += nn
 	}
 
 	return binary.BigEndian.Uint32(buf), nil
@@ -532,10 +535,13 @@ func pktlen(r io.Reader) (uint32, error) {
 func extractHeader(r io.Reader) (*header, error) {
 	buf := make([]byte, constants.HeaderSize)
 
-	// read exactly constants.HeaderSize bytes
-	_, err := io.ReadFull(r, buf)
-	if err != nil {
-		return nil, err
+	for n := 0; n < cap(buf); {
+		nn, err := r.Read(buf)
+		if err != nil {
+			return nil, err
+		}
+
+		n += nn
 	}
 
 	h := &header{

@@ -10,7 +10,7 @@ github.com/cloudfoundry/bosh-utils/uuid
 # github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd
 github.com/cppforlife/bosh-cpi-go/apiv1
 github.com/cppforlife/bosh-cpi-go/rpc
-# github.com/digitalocean/go-libvirt v0.0.0-20190715144809-7b622097a793
+# github.com/digitalocean/go-libvirt v0.0.0-20190626172931-4d226dd6c437
 github.com/digitalocean/go-libvirt
 github.com/digitalocean/go-libvirt/internal/constants
 github.com/digitalocean/go-libvirt/internal/go-xdr/xdr2

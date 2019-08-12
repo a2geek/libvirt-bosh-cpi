@@ -10,6 +10,8 @@ github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd h1:ln2sMwDn
 github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd/go.mod h1:WkeM0jfnGyGPPqo7JoBL8pwutlzeKgGElbkIV9ieSlU=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/digitalocean/go-libvirt v0.0.0-20190626172931-4d226dd6c437 h1:phR13shVFOIpa1pnLBmewI9p16NEladLPvVylLPeexo=
+github.com/digitalocean/go-libvirt v0.0.0-20190626172931-4d226dd6c437/go.mod h1:PRcPVAAma6zcLpFd4GZrjR/MRpood3TamjKI2m/z/Uw=
 github.com/digitalocean/go-libvirt v0.0.0-20190715144809-7b622097a793 h1:+ItaX1GKKT70bYwazNtWeYz8QBfirNC85J70psPGgN0=
 github.com/digitalocean/go-libvirt v0.0.0-20190715144809-7b622097a793/go.mod h1:PRcPVAAma6zcLpFd4GZrjR/MRpood3TamjKI2m/z/Uw=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
