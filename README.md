@@ -28,7 +28,6 @@ Known TODOs:
   * `/dev/vdb`: ephemeral disk (optional?)
   * `/dev/vdc`: config disk
   * `/dev/vdd`: persistent disk (optional).
-* Current setup connects to Unix socket. Only good while developing! Need to swap directions and prove that the TLS factory works. Also need to find the Libvirt documentation on how to configure for future reference.
 
 ## Tinkering
 
@@ -42,9 +41,9 @@ All commands should be run from the root of this repository.
    $ export BOSH_DEPLOYMENT_DIR=~/Documents/Source/bosh-deployment
    ```
 
-2. Connectivity settings: Libvirt supports a number of connection types, and the `libvirt_cpi` supports 3 of them. Create the related variable file with your settings in `my-settings.yml` (for ease of copy/paste as well as the `.gitignore` is set for this).
+2. Connectivity settings: Libvirt supports a number of connection types, and the `libvirt_cpi` supports 3 of them. Create the variable file  `my-settings.yml` with your specific settings (for ease of copy/paste as well since the `.gitignore` is set for this file name).
 
-   a. `socket`: Connect by Unix socket. The simplest and mostly useless for standing up a foundation. But if you're just hacking at the CPI code and standing up the Director is sufficient, it's quick and easy:
+   a. `socket`: Connect by Unix socket. The simplest method, but mostly useless for standing up a foundation. If you're just hacking at the CPI code and standing up the Director this is sufficient, and it's quick and easy:
    ```
    libvirt_socket: <socket here, likely /var/run/libvirt/libvirt-sock>
    ```
