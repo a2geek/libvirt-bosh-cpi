@@ -91,6 +91,7 @@ All commands should be run from the root of this repository.
    ```
    $ bosh create-env ${BOSH_DEPLOYMENT_DIR}/bosh.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/jumpbox-user.yml \
+       --ops-file=${BOSH_DEPLOYMENT_DIR}/misc/cpi-resize-disk.yml \
        --ops-file=manifests/libvirt_cpi.yml \
        --ops-file=manifests/libvirt_qemu_kvm.yml \
        --ops-file=manifests/${LIBVIRT_CONNECTIVITY} \
@@ -99,7 +100,9 @@ All commands should be run from the root of this repository.
        --vars-file=my-settings.yml \
        --vars-file=manifests/bosh-vars.yml
    ```
-   Note that the `jumpbox-user.yml` operations file gives access to a user on the BOSH Director that has access to the `root` account; useful for development work; feel free to leave it off.
+   Notes:
+   * `jumpbox-user.yml` operations file gives access to a user on the BOSH Director that has access to the `root` account. Useful for development work - feel free to leave it off.
+   * `cpi-resize-disk.yml` indicates this CPI is able to resize a disk natively. Untested at this time. Feel free to leave it off; note that resizing means BOSH mounts two disks and copies files between the disks, and with current configuration that may not work.
 
 ## Setup
 
