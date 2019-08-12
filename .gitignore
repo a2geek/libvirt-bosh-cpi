@@ -17,6 +17,7 @@ releases/**/*.tgz
 bosh-creds.yml
 cpi
 state.json
+my-settings.yml
 
 # Related to VS Code
 .vscode

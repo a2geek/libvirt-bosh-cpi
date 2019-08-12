@@ -36,27 +36,71 @@ Expect things to not work. This is all setup for Ubuntu Bionic (18.04) using QEM
 
 All commands should be run from the root of this repository.
 
-1. Create a release. Only needed first time and if there are any code changes.
-   ```
-   $ bosh create-release --force --tarball $PWD/cpi
-   ```
-
-2. Set the location of `BOSH_DEPLOYMENT_DIR` to be the directory for [cloudfoundry/bosh-deployment](https://github.com/cloudfoundry/bosh-deployment).
+1. Set the location of `BOSH_DEPLOYMENT_DIR` to be the directory for [cloudfoundry/bosh-deployment](https://github.com/cloudfoundry/bosh-deployment).
    ```
    # EXAMPLE ONLY!
    $ export BOSH_DEPLOYMENT_DIR=~/Documents/Source/bosh-deployment
    ```
 
-3. Deploy the BOSH Director. 
+2. Connectivity settings: Libvirt supports a number of connection types, and the `libvirt_cpi` supports 3 of them. Create the related variable file with your settings in `my-settings.yml` (for ease of copy/paste as well as the `.gitignore` is set for this).
+
+   a. `socket`: Connect by Unix socket. The simplest and mostly useless for standing up a foundation. But if you're just hacking at the CPI code and standing up the Director is sufficient, it's quick and easy:
+   ```
+   libvirt_socket: <socket here, likely /var/run/libvirt/libvirt-sock>
+   ```
+   Set the `LIBVIRT_CONNECTIVITY` variable:
+   ```
+   $ export LIBVIRT_CONNECTIVITY=libvirt_socket.yml
+   ```
+   b. `tcp`: Unsecured access via TCP. See the [Libvirt "Remote support"](https://libvirt.org/remote.html) page for details on how to set up TCP.
+   ```
+   libvirt_host: <host name or IP address>
+   libvirt_port: '<port,likely 16509>'  # must be a string
+   ```
+   Set the `LIBVIRT_CONNECTIVITY` variable:
+   ```
+   $ export LIBVIRT_CONNECTIVITY=libvirt_tcp.yml
+   ```
+   c. `tls`: Secured access via TLS. See the [Libvirt "Remote support"](https://libvirt.org/remote.html) page for details on how to set up TLS connections and generate the various certificates.
+   ```
+   libvirt_host: <host name or IP address>
+   libvirt_port: '<port,likely 16514>'  # must be a string
+   libvirt_client_cert: |
+     -----BEGIN CERTIFICATE-----
+     <snip>
+     -----END CERTIFICATE-----
+   libvirt_client_key: |
+     -----BEGIN RSA PRIVATE KEY-----
+     <snip>
+     -----END RSA PRIVATE KEY-----
+   libvirt_server_ca: |
+     -----BEGIN CERTIFICATE-----
+     <snip>
+     -----END CERTIFICATE-----
+   ```
+   Set the `LIBVIRT_CONNECTIVITY` variable:
+   ```
+   $ export LIBVIRT_CONNECTIVITY=libvirt_tls.yml
+   ```
+
+3. Create a release. Only needed first time and if there are any code changes.
+   ```
+   $ bosh create-release --force --tarball $PWD/cpi
+   ```
+
+4. Deploy the BOSH Director.
    ```
    $ bosh create-env ${BOSH_DEPLOYMENT_DIR}/bosh.yml \
+       --ops-file=${BOSH_DEPLOYMENT_DIR}/jumpbox-user.yml \
        --ops-file=manifests/libvirt_cpi.yml \
        --ops-file=manifests/libvirt_qemu_kvm.yml \
-       --ops-file=manifests/libvirt_socket.yml \
+       --ops-file=manifests/${LIBVIRT_CONNECTIVITY} \
        --state=state.json \
        --vars-store=bosh-creds.yml \
+       --vars-file=my-settings.yml \
        --vars-file=manifests/bosh-vars.yml
    ```
+   Note that the `jumpbox-user.yml` operations file gives access to a user on the BOSH Director that has access to the `root` account; useful for development work; feel free to leave it off.
 
 ## Setup
 
@@ -140,3 +184,7 @@ At the command-line, from the source directory a compile can be done:
 $ cd src
 $ go build -o ../main main/main.go
 ```
+
+# References
+
+* [Libvirt "Remote support"](https://libvirt.org/remote.html) 
