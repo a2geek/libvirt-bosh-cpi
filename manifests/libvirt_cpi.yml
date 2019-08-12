@@ -62,11 +62,6 @@
   path: /cloud_provider/properties/libvirt_cpi?/log_level?
   value: ((cpi_log_level))
 
-# Enable the CPI level resizing of disks as the default (good idea or no?)
-- type: replace
-  path: /instance_groups/name=bosh/properties/director/enable_cpi_resize_disk?
-  value: true
-
 - type: replace
   path: /variables/-
   value:
