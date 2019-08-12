@@ -18,6 +18,8 @@ bosh-creds.yml
 cpi
 state.json
 my-settings.yml
+vcap-private-key.pem
+jumpbox-private-key.pem
 
 # Related to VS Code
 .vscode

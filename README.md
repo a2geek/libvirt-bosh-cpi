@@ -92,6 +92,7 @@ All commands should be run from the root of this repository.
    $ bosh create-env ${BOSH_DEPLOYMENT_DIR}/bosh.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/jumpbox-user.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/misc/cpi-resize-disk.yml \
+       --ops-file=${BOSH_DEPLOYMENT_DIR}/misc/dns.yml \
        --ops-file=manifests/libvirt_cpi.yml \
        --ops-file=manifests/libvirt_qemu_kvm.yml \
        --ops-file=manifests/${LIBVIRT_CONNECTIVITY} \
@@ -103,6 +104,7 @@ All commands should be run from the root of this repository.
    Notes:
    * `jumpbox-user.yml` operations file gives access to a user on the BOSH Director that has access to the `root` account. Useful for development work - feel free to leave it off.
    * `cpi-resize-disk.yml` indicates this CPI is able to resize a disk natively. Untested at this time. Feel free to leave it off; note that resizing means BOSH mounts two disks and copies files between the disks, and with current configuration that may not work.
+   * `dns.yml` changes the default DNS based on the `internal_dns` entry. Leave it off unless you actually need it.
 
 ## Setup
 
@@ -178,6 +180,13 @@ Available:      264.76 GiB
 virsh # exit
 ```
 
+## Utilities
+
+There are a few scripts in the `scripts` folder.
+
+1. BOSH environment variables for the current Director can be setup with `source scripts/bosh-env.sh`.
+2. The SSH keys can be extracted with `scripts/get-ssh-keys.sh`. These will create two PEM files: `vcap-private-key.pem` and `jumpbox-private-key.pem`. Usage is the usual SSH mechanisms like `ssh -i jumpbox-private-key.pem jumpbox@your-director`. If you change the director, any trusts need to be resolved as usual.
+
 ## Developing
 
 At the command-line, from the source directory a compile can be done:
@@ -187,6 +196,8 @@ $ cd src
 $ go build -o ../main main/main.go
 ```
 
-# References
+## References
 
-* [Libvirt "Remote support"](https://libvirt.org/remote.html) 
+* [Libvirt "Remote support"](https://libvirt.org/remote.html)
+* [BOSH Agent MetadataContentsType](https://godoc.org/github.com/cloudfoundry/bosh-agent/infrastructure#MetadataContentsType)
+* [BOSH Agent UserDataContentsType](https://godoc.org/github.com/cloudfoundry/bosh-agent/infrastructure#UserDataContentsType)
