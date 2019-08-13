@@ -50,6 +50,11 @@ func (m libvirtManager) CreateStorageVolume(name string, sizeInBytes uint64) (li
 	}
 	m.logger.Debug("libvirt", "CreateStorageVolume Volume=%v", vol)
 
+	err = m.client.StoragePoolRefresh(m.defaultPool, 0)
+	if err != nil {
+		return libvirt.StorageVol{}, err
+	}
+
 	return vol, nil
 }
 
@@ -216,6 +221,11 @@ func (m libvirtManager) StorageVolDeleteByName(name string) error {
 	err = m.client.StorageVolDelete(vol, 0)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "unable to delete '%s' storage volume", name)
+	}
+
+	err = m.client.StoragePoolRefresh(m.defaultPool, 0)
+	if err != nil {
+		return err
 	}
 
 	return nil
