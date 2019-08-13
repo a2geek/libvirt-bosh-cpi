@@ -14,25 +14,16 @@ releases/**/*.tgz
 *#
 
 # Things we shouldn't commit
-bosh-creds.yml
-cpi
-state.json
-my-settings.yml
-vcap-private-key.pem
-jumpbox-private-key.pem
+/bosh-creds.yml
+/cpi
+/state.json
+/my-settings.yml
+/vcap-private-key.pem
+/jumpbox-private-key.pem
 
 # Related to VS Code
-.vscode
+/.vscode
 
 # Tooling VS Code brings in for Go
-bin/
-pkg/
-src/github.com/acroca/
-src/github.com/go-delve/
-src/github.com/karrick/
-src/github.com/mdempsky/
-src/github.com/ramya-rao-a/
-src/github.com/rogpeppe/
-src/github.com/sqs/
-src/github.com/uudashr/
-src/golang.org/
+/bin/
+/pkg/
