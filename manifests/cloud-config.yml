@@ -9,10 +9,19 @@ vm_types:
     cpu: 2
     memory: 4096
     ephemeral_disk: 16384
+# Required by postgres-release, cf-deployment
+- name: small
+  cloud_properties:
+    cpu: 1
+    memory: 2048
+    ephemeral_disk: 2048
 
 disk_types:
 - name: default
   disk_size: 1024
+# Required by postgres-release, cf-deployment
+- name: 10GB
+  disk_size: 10240
 
 networks:
 - name: default
