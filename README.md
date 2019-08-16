@@ -95,17 +95,66 @@ All commands should be run from the root of this repository.
        --ops-file=${BOSH_DEPLOYMENT_DIR}/misc/cpi-resize-disk.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/misc/dns.yml \
        --ops-file=manifests/libvirt_cpi.yml \
-       --ops-file=manifests/libvirt_qemu_kvm.yml \
        --ops-file=manifests/${LIBVIRT_CONNECTIVITY} \
        --state=state.json \
        --vars-store=bosh-creds.yml \
        --vars-file=my-settings.yml \
-       --vars-file=manifests/bosh-vars.yml
+       --vars-file=manifests/bosh-vars.yml \
+       --vars-file=manifests/openstack-kvm-vars.yml
    ```
    Notes:
    * `jumpbox-user.yml` operations file gives access to a user on the BOSH Director that has access to the `root` account. Useful for development work - feel free to leave it off.
    * `cpi-resize-disk.yml` indicates this CPI is able to resize a disk natively. Untested at this time. Feel free to leave it off; note that resizing means BOSH mounts two disks and copies files between the disks, and with current configuration that may not work.
    * `dns.yml` changes the default DNS based on the `internal_dns` entry. Leave it off unless you actually need it.
+   * There are two sets of variable files for hypervisor selection: `kvm` and `qemu`, all of which are using the Openstack stemcell. From the Libvirt documentation, `kvm` is likely the best for performance reasons (`openstack-kvm-vars.yml`) as `qemu` virtualizes the entire CPU.
+
+## Deployments
+
+Here are some experiments for deployments. The default cloud config should be set for them.
+
+Be certain the BOSH environment has been setup in the current shell:
+```
+$ source scripts/bosh-env.sh
+```
+
+Make sure the cloud config exists (or is current):
+```
+$ bosh -n update-cloud-config manifests/cloud-config.yml
+```
+
+Upload a stemcell (check for current Openstack stemcells at [bosh.io](https://bosh.io/stemcells/bosh-openstack-kvm-ubuntu-xenial-go_agent)):
+```
+$ bosh upload-stemcell --sha1 b5f9671591b22602b982fbf4f2320fe971718f7e  https://bosh.io/d/stemcells/bosh-openstack-kvm-ubuntu-xenial-go_agent?v=456.3
+```
+
+### Zookeeper
+
+Set `ZOOKEEPER_DIR` to a local copy of the [Zookeeper release](https://github.com/cppforlife/zookeeper-release) directory.
+
+Deploy!
+```
+$ bosh -n -d zookeeper deploy $ZOOKEEPER_DIR/manifests/zookeeper.yml \
+    --vars-store=zookeeper-creds.yml
+```
+
+### Postgres
+
+Set `POSTGRES_DIR` to a local copy of the [Postgres release](https://github.com/cloudfoundry/postgres-release) directory.
+
+Upload a Postgres release...
+```
+$ bosh upload-release https://bosh.io/d/github.com/cloudfoundry/postgres-release
+```
+
+Deploy!
+```
+$ bosh -n -d postgres deploy $POSTGRES_DIR/templates/postgres.yml \
+    -o $POSTGRES_DIR/templates/operations/add_static_ips.yml \
+    -o $POSTGRES_DIR/templates/operations/set_properties.yml \
+    -o $POSTGRES_DIR/templates/operations/use_bbr.yml \
+    --vars-store=postgres.yml \
+    -l manifests/postgres-vars.yml
+```
 
 ## Setup
 
