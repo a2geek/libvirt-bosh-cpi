@@ -6,7 +6,6 @@ A Go BOSH CPI for the [libvirt virtualization API](https://libvirt.org/).
 BOSH director can be stood up. Stemcell can now be uploaded.
 
 Known defects:
-* VMs, when deleted, are only shut down. (Disks are detached and removed.)
 * If a VM has a persistent disk attached when it is deleted, that disk also gets deleted. Likely only an issue when standing up the BOSH director itself(?) since the detach disk method should be called by BOSH itself.
 * With more than one VM being created, the Libvirt storage pool errors with `internal error: pool 'bosh-pool' has asynchronous jobs running.' in 'create_vm'`. Setting the workers to `1` bypasses the issue. Possibly use a [distributed lock](https://github.com/minio/dsync) to manage?
 
