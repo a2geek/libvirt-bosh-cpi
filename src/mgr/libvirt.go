@@ -327,7 +327,12 @@ func (m libvirtManager) DomainDestroy(name string) error {
 		return bosherr.WrapErrorf(err, "unable to find vm '%s'", name)
 	}
 
-	return m.client.DomainDestroy(vm)
+	err = m.client.DomainDestroy(vm)
+	if err != nil {
+		return err
+	}
+
+	return m.client.DomainUndefine(vm)
 }
 
 func (m libvirtManager) DomainAttachManualNetworkInterface(dom libvirt.Domain, ip string) error {
