@@ -75,3 +75,21 @@
 - type: replace
   path: /cloud_provider/properties/libvirt_cpi?/vm_ssh_key?
   value: ((vm_ssh_key))
+
+# This is for rendering within the VM once stood up
+- type: replace
+  path: /instance_groups/name=bosh/properties/libvirt_cpi?/settings?
+  value: &libvirt_settings
+    storage_pool_name: ((libvirt_storage_pool_name))
+    network_name: ((libvirt_network_name))
+    network_dhcp_ip: ((libvirt_network_dhcp_ip))
+    root_device: ((libvirt_root_device))
+    disk_device: ((libvirt_disk_device))
+    storage_volume: ((libvirt_storage_volume))
+    manual_network_interface: ((libvirt_manual_network_interface))
+    vm_domain: ((libvirt_vm_domain))
+
+# This is for initial standup of VM (bootstrap?)
+- type: replace
+  path: /cloud_provider/properties/libvirt_cpi?/settings?
+  value: *libvirt_settings

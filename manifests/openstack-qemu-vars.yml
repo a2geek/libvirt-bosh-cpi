@@ -1,0 +1,56 @@
+# Rendered with Go text templates, see https://golang.org/pkg/text/template/
+libvirt_network_dhcp_ip: |
+  <host name='{{.VmName}}' mac='{{.MacAddress}}' ip='{{.IpAddress}}'/>
+libvirt_root_device: |
+  <disk type='file' device='disk'>
+    <driver name='qemu' type='raw' cache='none'/>
+    <source file='{{.TargetPath}}'/>
+    <target dev='{{.TargetDevice}}' bus='virtio'/>
+  </disk>
+libvirt_disk_device: |
+  <disk type='file' device='disk'>
+    <driver name='qemu' type='raw' cache='none'/>
+    <source file='{{.TargetPath}}'/>
+    <target dev='{{.TargetDevice}}' bus='virtio'/>
+  </disk>
+libvirt_storage_volume: |
+  <volume>
+    <name>{{.Name}}</name>
+    <allocation unit="G">0</allocation>
+    <capacity unit="{{.Unit}}">{{.Size}}</capacity>
+  </volume>
+libvirt_manual_network_interface: |
+  <interface type='network'>
+    <source network='{{.NetworkName}}'/>
+    <target dev='vnet0'/>
+    <mac address='{{.MacAddress}}'/>
+    <model type='virtio'/>
+    <alias name='net0'/>
+  </interface>
+libvirt_vm_domain: |
+  <domain type='qemu'>
+    <name>{{.Name}}</name>
+    <uuid>{{.UUID}}</uuid>
+    <memory unit='MiB'>{{.Memory}}</memory>
+    <vcpu>{{.CPU}}</vcpu>
+    <os>
+      <type>hvm</type>
+      <boot dev='hd'/>
+    </os>
+    <features>
+      <acpi/>
+      <apic/>
+      <vmport state='off'/>
+    </features>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>restart</on_crash>
+    <devices>
+      <serial type='pty'>
+        <target port='0'/>
+      </serial>
+      <console type='pty'>
+        <target type='serial' port='0'/>
+      </console>
+    </devices>
+  </domain>
