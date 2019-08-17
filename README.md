@@ -3,12 +3,14 @@ A Go BOSH CPI for the [libvirt virtualization API](https://libvirt.org/).
 
 ## Status
 
-BOSH director can be stood up. Stemcell can now be uploaded.
+BOSH director can be stood up. Stemcell can now be uploaded. A number of BOSH deploys can be done. Beware of the defects, however!
 
 Known defects:
 * If a VM has a persistent disk attached when it is deleted, that disk also gets deleted. Likely only an issue when standing up the BOSH director itself(?) since the detach disk method should be called by BOSH itself.
+* On reboot, the VMs are (a) stopped and (b) their persistent disk is detached.
 
 Known TODOs:
+* VM allows a title and description. At a minimum, the title should be filled in with the job(?)/index. Description is maybe a blurb about a BOSH managed VM.
 * Agent (dynamic) configuration needs to be setup. Working on setting up a configuration disk, currently hardcoded to the [OpenStack settings](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_openstack_agent_settings/apply.sh):
   ```
   {
