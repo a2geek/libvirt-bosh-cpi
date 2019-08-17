@@ -82,7 +82,7 @@ func (c CPI) CreateVMV2(
 	}
 
 	// Attach disks
-	if err := c.attachBootDevice(vmName, bootName, "vda"); err != nil {
+	if err := c.attachDiskDevice(vmName, bootName, "vda"); err != nil {
 		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapErrorf(err, "attaching boot disk for vm '%s'", vmName)
 	}
 	if err := c.attachDiskDevice(vmName, ephemeralName, "vdb"); err != nil {
@@ -136,16 +136,10 @@ func (c CPI) DeleteVM(cid apiv1.VMCID) error {
 			if err != nil {
 				return bosherr.WrapErrorf(err, "unable to delete disk '%s' (was attached to vm '%s')", diskCID.AsString(), cid.AsString())
 			}
-
 		}
 	}
 
-	err = c.manager.DomainDestroy(cid.AsString())
-	if err != nil {
-		return bosherr.WrapErrorf(err, "unable to delete vm '%s'", cid.AsString())
-	}
-
-	return nil
+	return c.manager.DomainDestroy(cid.AsString())
 }
 
 func (c CPI) CalculateVMCloudProperties(res apiv1.VMResources) (apiv1.VMCloudProps, error) {

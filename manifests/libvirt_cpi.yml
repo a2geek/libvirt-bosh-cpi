@@ -84,7 +84,6 @@
     storage_pool_name: ((libvirt_storage_pool_name))
     network_name: ((libvirt_network_name))
     network_dhcp_ip: ((libvirt_network_dhcp_ip))
-    root_device: ((libvirt_root_device))
     disk_device: ((libvirt_disk_device))
     storage_volume: ((libvirt_storage_volume))
     manual_network_interface: ((libvirt_manual_network_interface))

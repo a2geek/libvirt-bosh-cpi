@@ -101,22 +101,6 @@ func (c CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskH
 	return diskHint, nil
 }
 
-func (c CPI) attachBootDevice(vmName, diskName, deviceName string) error {
-	xmlstring, err := c.manager.StorageVolGetXMLByName(diskName)
-	if err != nil {
-		return bosherr.WrapErrorf(err, "unable to locate (boot) storage volume '%s'", diskName)
-	}
-
-	var storageVol mgr.StorageVolXml
-	err = xml.Unmarshal([]byte(xmlstring), &storageVol)
-	if err != nil {
-		return bosherr.WrapErrorf(err, "unable to unmarshal (boot) storage volume XML: %s", xmlstring)
-	}
-	storageVol.TargetDevice = deviceName
-
-	return c.manager.DomainAttachBootDisk(vmName, storageVol)
-}
-
 func (c CPI) attachDiskDevice(vmName, diskName, deviceName string) error {
 	xmlstring, err := c.manager.StorageVolGetXMLByName(diskName)
 	if err != nil {

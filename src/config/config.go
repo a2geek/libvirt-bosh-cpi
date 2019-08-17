@@ -23,7 +23,6 @@ type LibvirtSettings struct {
 	ManualNetworkInterfaceXml string
 	NetworkName               string
 	NetworkDhcpIpXml          string
-	RootDeviceXml             string
 	StemcellFormats           []string
 	StoragePoolName           string
 	StorageVolXml             string
@@ -76,10 +75,6 @@ func (c Config) Validate() error {
 
 	if c.Settings.NetworkName == "" {
 		e = append(e, errors.Error("network name is required"))
-	}
-
-	if c.Settings.RootDeviceXml == "" {
-		e = append(e, errors.Error("root device xml is required"))
 	}
 
 	if c.Settings.StoragePoolName == "" {

@@ -2,12 +2,6 @@
 libvirt_stemcell_formats: [ "openstack-qcow2", "openstack-raw" ]
 libvirt_network_dhcp_ip: |
   <host name='{{.VmName}}' mac='{{.MacAddress}}' ip='{{.IpAddress}}'/>
-libvirt_root_device: |
-  <disk type='file' device='disk'>
-    <driver name='qemu' type='raw' cache='none'/>
-    <source file='{{.TargetPath}}'/>
-    <target dev='{{.TargetDevice}}' bus='virtio'/>
-  </disk>
 libvirt_disk_device: |
   <disk type='file' device='disk'>
     <driver name='qemu' type='raw' cache='none'/>
