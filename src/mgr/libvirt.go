@@ -50,11 +50,6 @@ func (m libvirtManager) CreateStorageVolume(name string, sizeInBytes uint64) (li
 	}
 	m.logger.Debug("libvirt", "CreateStorageVolume Volume=%v", vol)
 
-	err = m.client.StoragePoolRefresh(m.defaultPool, 0)
-	if err != nil {
-		return libvirt.StorageVol{}, err
-	}
-
 	return vol, nil
 }
 

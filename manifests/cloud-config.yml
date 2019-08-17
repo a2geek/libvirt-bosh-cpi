@@ -37,7 +37,7 @@ networks:
 #vm_extensions:
 
 compilation:
-  workers: 1
+  workers: 5
   az: z1
   reuse_compilation_vms: true
   vm_type: default

@@ -7,7 +7,6 @@ BOSH director can be stood up. Stemcell can now be uploaded.
 
 Known defects:
 * If a VM has a persistent disk attached when it is deleted, that disk also gets deleted. Likely only an issue when standing up the BOSH director itself(?) since the detach disk method should be called by BOSH itself.
-* With more than one VM being created, the Libvirt storage pool errors with `internal error: pool 'bosh-pool' has asynchronous jobs running.' in 'create_vm'`. Setting the workers to `1` bypasses the issue. Possibly use a [distributed lock](https://github.com/minio/dsync) to manage?
 
 Known TODOs:
 * Agent (dynamic) configuration needs to be setup. Working on setting up a configuration disk, currently hardcoded to the [OpenStack settings](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_openstack_agent_settings/apply.sh):
