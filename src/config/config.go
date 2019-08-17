@@ -24,6 +24,7 @@ type LibvirtSettings struct {
 	NetworkName               string
 	NetworkDhcpIpXml          string
 	RootDeviceXml             string
+	StemcellFormats           []string
 	StoragePoolName           string
 	StorageVolXml             string
 	VmDomainXml               string

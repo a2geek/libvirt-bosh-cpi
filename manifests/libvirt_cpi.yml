@@ -80,6 +80,7 @@
 - type: replace
   path: /instance_groups/name=bosh/properties/libvirt_cpi?/settings?
   value: &libvirt_settings
+    stemcell_formats: ((libvirt_stemcell_formats))
     storage_pool_name: ((libvirt_storage_pool_name))
     network_name: ((libvirt_network_name))
     network_dhcp_ip: ((libvirt_network_dhcp_ip))
