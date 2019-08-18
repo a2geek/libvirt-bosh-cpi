@@ -92,7 +92,6 @@ func (m libvirtManager) CreateDomain(name, uuid string, memory, cpu uint) (libvi
 	}
 	m.logger.Debug("libvirt", "CreateDomain XML=%s", xml)
 
-	// return m.client.DomainCreateXML(xml.String(), 0)
 	return m.client.DomainDefineXML(xml.String())
 }
 
@@ -256,7 +255,16 @@ func (m libvirtManager) DomainAttachDisk(vmName string, storageVol StorageVolXml
 		return bosherr.WrapError(err, "unable to generate disk device XML template")
 	}
 
-	return m.client.DomainAttachDeviceFlags(vm, xml.String(), 0)
+	active, err := m.client.DomainIsActive(vm)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to determine if '%s' is running", vmName)
+	}
+
+	flags := libvirt.DomainDeviceModifyConfig
+	if active != 0 {
+		flags |= libvirt.DomainDeviceModifyLive
+	}
+	return m.client.DomainAttachDeviceFlags(vm, xml.String(), uint32(flags))
 }
 
 func (m libvirtManager) DomainDetachDisk(vmName string, storageVol StorageVolXml) error {
@@ -276,7 +284,8 @@ func (m libvirtManager) DomainDetachDisk(vmName string, storageVol StorageVolXml
 		return bosherr.WrapError(err, "unable to generate storage volume XML template")
 	}
 
-	return m.client.DomainDetachDevice(vm, xml.String())
+	flags := libvirt.DomainDeviceModifyConfig | libvirt.DomainDeviceModifyLive
+	return m.client.DomainDetachDeviceFlags(vm, xml.String(), uint32(flags))
 }
 
 func (m libvirtManager) DomainLookupByName(name string) (libvirt.Domain, error) {
