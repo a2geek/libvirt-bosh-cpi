@@ -151,6 +151,31 @@ func (c CPI) CalculateVMCloudProperties(res apiv1.VMResources) (apiv1.VMCloudPro
 }
 
 func (c CPI) SetVMMetadata(cid apiv1.VMCID, metadata apiv1.VMMeta) error {
+	m, err := NewActualVMMeta(metadata)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to unmarshal metadata for '%s'", cid.AsString())
+	}
+
+	vm, err := c.manager.DomainLookupByName(cid.AsString())
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to find '%s' VM", cid.AsString())
+	}
+
+	err = c.manager.DomainSetTitle(vm, m.Name)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to set title for '%s'", cid.AsString())
+	}
+
+	json, err := metadata.MarshalJSON()
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to marshal metadata for '%s'", cid.AsString())
+	}
+
+	err = c.manager.DomainSetDescription(vm, string(json))
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to set metadata for '%s'", cid.AsString())
+	}
+
 	return nil
 }
 

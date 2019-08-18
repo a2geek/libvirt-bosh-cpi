@@ -20,6 +20,8 @@ type Manager interface {
 	DomainListDevices(dom libvirt.Domain) (DevicesXml, error)
 	DomainLookupByName(name string) (libvirt.Domain, error)
 	DomainReboot(name string) error
+	DomainSetDescription(dom libvirt.Domain, description string) error
+	DomainSetTitle(dom libvirt.Domain, title string) error
 	DomainStart(dom libvirt.Domain) error
 	ReadStorageVolumeBytes(name string) ([]byte, error)
 	StorageVolDeleteByName(name string) error

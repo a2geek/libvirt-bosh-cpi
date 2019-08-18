@@ -383,3 +383,11 @@ func (m libvirtManager) DomainListDevices(dom libvirt.Domain) (DevicesXml, error
 
 	return devices, nil
 }
+
+func (m libvirtManager) DomainSetDescription(dom libvirt.Domain, description string) error {
+	return m.client.DomainSetMetadata(dom, int32(libvirt.DomainMetadataDescription), []string{description}, nil, nil, libvirt.DomainAffectLive|libvirt.DomainAffectConfig)
+}
+
+func (m libvirtManager) DomainSetTitle(dom libvirt.Domain, title string) error {
+	return m.client.DomainSetMetadata(dom, int32(libvirt.DomainMetadataTitle), []string{title}, nil, nil, libvirt.DomainAffectLive|libvirt.DomainAffectConfig)
+}
