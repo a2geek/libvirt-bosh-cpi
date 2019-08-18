@@ -158,6 +158,7 @@ func (c CPI) HasDisk(cid apiv1.DiskCID) (bool, error) {
 }
 
 func (c CPI) SetDiskMetadata(cid apiv1.DiskCID, metadata apiv1.DiskMeta) error {
+	// Libvirt does not appear to have metadata capability for a storage volume
 	return nil
 }
 
