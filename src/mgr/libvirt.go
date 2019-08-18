@@ -90,9 +90,18 @@ func (m libvirtManager) CreateDomain(name, uuid string, memory, cpu uint) (libvi
 	if err != nil {
 		return libvirt.Domain{}, bosherr.WrapError(err, "unable to generate VM domain XML template")
 	}
-	m.logger.Debug("libvirt", "CreateDomain XML=%s", xml)
 
-	return m.client.DomainDefineXML(xml.String())
+	dom, err := m.client.DomainDefineXML(xml.String())
+	if err != nil {
+		return libvirt.Domain{}, bosherr.WrapError(err, "unable to create VM from domain XML")
+	}
+
+	err = m.client.DomainSetAutostart(dom, 1)
+	if err != nil {
+		return libvirt.Domain{}, bosherr.WrapError(err, "unable to set domain to autostart")
+	}
+
+	return dom, nil
 }
 
 func (m libvirtManager) DomainStart(dom libvirt.Domain) error {

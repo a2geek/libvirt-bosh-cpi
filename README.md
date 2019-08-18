@@ -6,7 +6,7 @@ A Go BOSH CPI for the [libvirt virtualization API](https://libvirt.org/).
 BOSH director can be stood up. Stemcell can now be uploaded. A number of BOSH deploys can be done. Beware of the defects, however!
 
 Known defects:
-* On reboot/power outage, the VMs are stopped.
+* After a restart/reboot/power outage, VMs are started but BOSH VM(s) do not always seem to want to start without lots of fiddling.
 
 Known TODOs:
 * Agent (dynamic) configuration needs to be setup. Working on setting up a configuration disk, currently hardcoded to the [OpenStack settings](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_openstack_agent_settings/apply.sh):
