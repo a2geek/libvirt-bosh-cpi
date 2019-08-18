@@ -218,11 +218,6 @@ func (m libvirtManager) StorageVolDeleteByName(name string) error {
 		return bosherr.WrapErrorf(err, "unable to delete '%s' storage volume", name)
 	}
 
-	err = m.client.StoragePoolRefresh(m.defaultPool, 0)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
