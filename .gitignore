@@ -20,8 +20,7 @@ releases/**/*.tgz
 /my-settings.yml
 /vcap-private-key.pem
 /jumpbox-private-key.pem
-/postgres.yml
-/concourse-creds.yml
+/*-creds.yml
 
 # Related to VS Code
 /.vscode
