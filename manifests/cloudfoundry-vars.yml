@@ -1,0 +1,2 @@
+system_domain: sys.mypcf.lan
+router_static_ips: [192.168.123.252]

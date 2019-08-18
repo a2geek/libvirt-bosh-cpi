@@ -8,13 +8,24 @@ vm_types:
   cloud_properties:
     cpu: 2
     memory: 4096
-    ephemeral_disk: 16384
+    ephemeral_disk: 10240
 # Required by postgres-release, cf-deployment
 - name: small
   cloud_properties:
     cpu: 1
     memory: 2048
-    ephemeral_disk: 2048
+    ephemeral_disk: 10240
+# Used by cf-deployment
+- name: minimal
+  cloud_properties:
+    cpu: 2
+    memory: 1024
+    ephemeral_disk: 10240
+- name: small-highmem
+  cloud_properties:
+    cpu: 2
+    memory: 4096
+    ephemeral_disk: 10240
 
 disk_types:
 - name: default
@@ -22,6 +33,11 @@ disk_types:
 # Required by postgres-release, cf-deployment
 - name: 10GB
   disk_size: 10240
+# Used by cf-deployment
+- disk_size: 5120
+  name: 5GB
+- disk_size: 100240
+  name: 100GB
 
 networks:
 - name: default
@@ -34,7 +50,31 @@ networks:
     gateway: 192.168.123.1
     static: 192.168.123.250-192.168.123.254
 
-#vm_extensions:
+vm_extensions:
+# Used by cf-deployment
+# - name: 5GB_ephemeral_disk
+#   cloud_properties:
+#     ephemeral_disk: 5_120
+# - name: 10GB_ephemeral_disk
+#   cloud_properties:
+#     ephemeral_disk: 10_240
+- name: 50GB_ephemeral_disk
+  cloud_properties:
+    ephemeral_disk: 51_200
+- name: 100GB_ephemeral_disk
+  cloud_properties:
+    ephemeral_disk: 102_400
+# - name: 500GB_ephemeral_disk
+#   cloud_properties:
+#     ephemeral_disk: 512_000
+# - name: 1TB_ephemeral_disk
+#   cloud_properties:
+#     ephemeral_disk: 1_024_000
+- name: diego-ssh-proxy-network-properties
+# - name: ssh-proxy-and-router-lb
+- name: cf-router-network-properties
+- name: cf-tcp-router-network-properties
+# - name: credhub-lb
 
 compilation:
   workers: 5
