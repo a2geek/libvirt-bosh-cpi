@@ -381,3 +381,5 @@ $ go build -o ../main main/main.go
 * [Libvirt "Remote support"](https://libvirt.org/remote.html)
 * [BOSH Agent MetadataContentsType](https://godoc.org/github.com/cloudfoundry/bosh-agent/infrastructure#MetadataContentsType)
 * [BOSH Agent UserDataContentsType](https://godoc.org/github.com/cloudfoundry/bosh-agent/infrastructure#UserDataContentsType)
+* [Cloud Foundry Deployment Guide](https://github.com/cloudfoundry/cf-deployment/blob/master/texts/deployment-guide.md)
+* [Cloud Foundry Cloud Configs](https://github.com/cloudfoundry/cf-deployment/blob/master/texts/on-cloud-configs.md)
