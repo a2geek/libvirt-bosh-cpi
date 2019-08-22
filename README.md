@@ -83,9 +83,7 @@ All commands should be run from the root of this repository.
    $ bosh create-release --force --tarball $PWD/cpi
    ```
 
-4. Set `BOSH_REBOOT_DIR` to a local copy of the [BOSH Reboot Patch](https://github.com/a2geek/bosh-reboot-patch) directory. Note that this is optional (see notes for more info).
-
-5. Deploy the BOSH Director.
+4. Deploy the BOSH Director.
    ```
    $ bosh create-env ${BOSH_DEPLOYMENT_DIR}/bosh.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/jumpbox-user.yml \
@@ -94,7 +92,6 @@ All commands should be run from the root of this repository.
        --ops-file=${BOSH_DEPLOYMENT_DIR}/bbr.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/uaa.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/credhub.yml \
-       --ops-file=${BOSH_REBOOT_DIR}/operations/add-to-director.yml \
        --ops-file=manifests/libvirt_cpi.yml \
        --ops-file=manifests/${LIBVIRT_CONNECTIVITY} \
        --state=state.json \
@@ -108,7 +105,7 @@ All commands should be run from the root of this repository.
    * `cpi-resize-disk.yml` indicates this CPI is able to resize a disk natively. Untested at this time. Feel free to leave it off; note that resizing means BOSH mounts two disks and copies files between the disks, and with current configuration that may not work.
    * `dns.yml` changes the default DNS based on the `internal_dns` entry. Leave it off unless you actually need it.
    * There are two sets of variable files for hypervisor selection: `kvm` and `qemu`, all of which are using the Openstack stemcell. From the Libvirt documentation, `kvm` is likely the best for performance reasons (`openstack-kvm-vars.yml`) as `qemu` virtualizes the entire CPU.
-   * The BOSH Director (and some BOSH deployments) don't always start up successfully after a reboot (intentional or not). The solution seems to be just a simple `monit stop all` followed by a `monit start all`. _BOSH Reboot Patch_ injects that into `/etc/rc.local`. This is entirely optional and may be left off.
+   * With current releases of [bosh-deployment](https://github.com/cloudfoundry/bosh-deployment), the [reboot bug](https://github.com/cloudfoundry/bosh/issues/2131) has been resolved with more current versions of BPM. If you must use an older version of BOSH and the reboot deal is a problem, see the [bosh-reboot-patch](https://github.com/a2geek/bosh-reboot-patch) as it may prove useful. The best option is to get a more current installation of BOSH.
 
 ## Deployments
 
