@@ -24,6 +24,7 @@ Known TODOs:
   * `/dev/vdb`: ephemeral disk (optional?)
   * `/dev/vdc`: config disk
   * `/dev/vdd`: persistent disk (optional).
+* Restructure this README as it's gotten both overwhelming and uninformative. Yes, that's a thing. ;-)
 
 ## Tinkering
 
