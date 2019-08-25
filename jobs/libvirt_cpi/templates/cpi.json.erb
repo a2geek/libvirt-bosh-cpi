@@ -2,7 +2,6 @@
 
 config = {
   "Settings" => {
-    "StemcellFormats" => p("libvirt_cpi.settings.stemcell_formats"),
     "DiskDeviceXml" => p("libvirt_cpi.settings.disk_device"),
     "ManualNetworkInterfaceXml" => p("libvirt_cpi.settings.manual_network_interface"),
     "NetworkName" => p("libvirt_cpi.settings.network_name"),
@@ -10,6 +9,14 @@ config = {
     "StoragePoolName" => p("libvirt_cpi.settings.storage_pool_name"),
     "StorageVolXml" => p("libvirt_cpi.settings.storage_volume"),
     "VmDomainXml" => p("libvirt_cpi.settings.vm_domain")
+  },
+  "Stemcell" => {
+    "Formats" => p("libvirt_cpi.stemcell.formats"),
+    "Type" => p("libvirt_cpi.stemcell.type"),
+    "Label" => p("libvirt_cpi.stemcell.label", ""),
+    "MetadataPath" => p("libvirt_cpi.stemcell.metadata_path", ""),
+    "UserdataPath" => p("libvirt_cpi.stemcell.userdata_path", ""),
+    "Filename" => p("libvirt_cpi.stemcell.filename", "")
   },
   "Connection" => {
     "Type" => p("libvirt_cpi.libvirt.type"),

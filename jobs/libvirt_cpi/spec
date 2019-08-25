@@ -14,9 +14,21 @@ properties:
   libvirt_cpi.log_level:
     description: "Bosh log level"
 
-  # Libvirt Settings
-  libvirt_cpi.settings.stemcell_formats:
+  # Stemcell settings
+  libvirt_cpi.stemcell.formats:
     description: "Array of stemcell formats supported"
+  libvirt_cpi.stemcell.type:
+    description: "Stemcell configuration type (ConfigDrive, CDROM)"
+  libvirt_cpi.stemcell.label:
+    description: "Disk label (ConfigDrive)"
+  libvirt_cpi.stemcell.metadata_path:
+    description: "Path the agent metadata file (ConfigDrive)"
+  libvirt_cpi.stemcell.userdata_path:
+    description: "Path to the agent userdata file (ConfigDrive)"
+  libvirt_cpi.stemcell.filename:
+    description: "Filename for agent settings (CDROM)"
+
+  # Libvirt Settings
   libvirt_cpi.settings.disk_device:
     description: "XML template for generating disk device"
   libvirt_cpi.settings.manual_network_interface:

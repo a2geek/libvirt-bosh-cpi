@@ -5,12 +5,6 @@
     name: libvirt-bosh-cpi
     url: file://((cpi_path))
 
-- type: replace
-  path: /resource_pools/name=vms/stemcell?
-  value:
-    url: https://bosh.io/d/stemcells/bosh-openstack-kvm-ubuntu-xenial-go_agent?v=315.13
-    sha1: 5ec5f3dfe382e31fa0bab540f1879064c99c356e
-
 # Configure Bosh VM size
 - type: replace
   path: /resource_pools/name=vms/cloud_properties?
@@ -80,7 +74,6 @@
 - type: replace
   path: /instance_groups/name=bosh/properties/libvirt_cpi?/settings?
   value: &libvirt_settings
-    stemcell_formats: ((libvirt_stemcell_formats))
     storage_pool_name: ((libvirt_storage_pool_name))
     network_name: ((libvirt_network_name))
     network_dhcp_ip: ((libvirt_network_dhcp_ip))

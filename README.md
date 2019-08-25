@@ -6,18 +6,6 @@ A Go BOSH CPI for the [libvirt virtualization API](https://libvirt.org/).
 BOSH director can be stood up. Stemcell can now be uploaded. A number of BOSH deploys can be done.
 
 Known TODOs:
-* Agent (dynamic) configuration needs to be setup. Working on setting up a configuration disk, currently hardcoded to the [OpenStack settings](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_openstack_agent_settings/apply.sh):
-  ```
-  {
-    "Type": "ConfigDrive",
-    "DiskPaths": [
-      "/dev/disk/by-label/CONFIG-2",
-      "/dev/disk/by-label/config-2"
-    ],
-    "MetaDataPath": "ec2/latest/meta-data.json",
-    "UserDataPath": "ec2/latest/user-data"
-  },
-  ```
 * Network is currently assigned via DHCP in the Libvirt settings. Investigate if this can be altered to be configured by the agent.
 * Disks are assigned statically; thus more than one of a type will fail. Current scheme:
   * `/dev/vda`: boot disk
@@ -25,6 +13,55 @@ Known TODOs:
   * `/dev/vdc`: config disk
   * `/dev/vdd`: persistent disk (optional).
 * Restructure this README as it's gotten both overwhelming and uninformative. Yes, that's a thing. ;-)
+
+## Stemcell Compatibility
+
+Development is being done against the Openstack stemcell. If, for some reason, another type of stemcell is needed, support can be expanded.
+
+Current Agent configurations support `ConfigDrive` only, but `CDROM` could be added relatively easily.  `HTTP`, `File`, and `InstanceMetadata` are unlikely to be added.
+
+These are all presumed to be run against some valid Libvirt provider. Thus, there is a chance that the Azure stemcell will work under Libvirt running on KVM.  Hypothetically.
+
+Note that, when trying to identify stemcells, every single one ran under Libvirt/QEMU _except_ for Warden which ships as a GZipped TAR file.  Ultimately, Openstack was settled upon (for no technical reason).  vSphere was hard to confirm due to the initial stemcell password being something different.
+
+### Openstack
+
+```
+stemcell:
+  formats: [ "openstack-qcow2", "openstack-raw" ]
+  type: ConfigDrive
+  label: "config-2"
+  metadata_path: "ec2/latest/meta-data.json"
+  userdata_path: "ec2/latest/user-data"
+```
+
+[Source](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_openstack_agent_settings/apply.sh)
+
+### Azure
+
+> NOTE: The `label` is too long for current config disk capabilities. At a minimum.
+
+```
+stemcell:
+  formats: [ "azure-vhd" ]
+  type: ConfigDrive
+  label: azure_cfg_dsk
+  metadata_path: "configs/MetaData"
+  userdata_path: "configs/UserData"
+```
+
+[Source](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_azure_agent_settings/apply.sh)
+
+### vSphere
+
+```
+stemcell:
+  formats: [ "vsphere-ova", "vsphere-ovf" ]
+  type: CDROM
+  filename: env
+```
+
+[Source](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_vsphere_agent_settings/apply.sh)
 
 ## Tinkering
 

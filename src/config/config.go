@@ -16,6 +16,7 @@ type Config struct {
 	ConnectFactory connection.Factory
 	Connection     connection.Config
 	Settings       LibvirtSettings
+	Stemcell       StemcellSettings
 	VMPublicKey    string
 }
 type LibvirtSettings struct {
@@ -23,10 +24,21 @@ type LibvirtSettings struct {
 	ManualNetworkInterfaceXml string
 	NetworkName               string
 	NetworkDhcpIpXml          string
-	StemcellFormats           []string
 	StoragePoolName           string
 	StorageVolXml             string
 	VmDomainXml               string
+}
+
+type StemcellSettings struct {
+	Formats []string
+	// ConfigDrive or CDROM
+	Type string
+	// ConfigDrive
+	Label        string
+	MetadataPath string
+	UserdataPath string
+	// CDROM
+	Filename string
 }
 
 func NewConfigFromPath(path string, fs boshsys.FileSystem) (Config, error) {

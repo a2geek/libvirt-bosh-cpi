@@ -1,0 +1,23 @@
+# NOTE: Does not work. The label is too long for the current Fat32 label capabilities.
+
+# Setup for Azure stemcell
+- type: replace
+  path: /resource_pools/name=vms/stemcell?
+  value:
+    url: https://bosh.io/d/stemcells/bosh-azure-hyperv-ubuntu-xenial-go_agent?v=456.12
+    sha1: 507722d1b6a829b99d8739e56399c71d0c52fbb2
+
+# This is for rendering within the VM once stood up
+- type: replace
+  path: /instance_groups/name=bosh/properties/libvirt_cpi?/stemcell?
+  value: &stemcell_settings
+    formats: [ "azure-vhd" ]
+    type: ConfigDrive
+    label: azure_cfg_dsk
+    metadata_path: "configs/MetaData"
+    userdata_path: "configs/UserData"
+
+# This is for initial standup of VM (bootstrap?)
+- type: replace
+  path: /cloud_provider/properties/libvirt_cpi?/stemcell?
+  value: *stemcell_settings

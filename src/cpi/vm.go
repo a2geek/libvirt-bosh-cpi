@@ -57,7 +57,7 @@ func (c CPI) CreateVMV2(
 	agentEnv.AttachEphemeralDisk(apiv1.NewDiskHintFromString("/dev/vdb"))
 
 	// Create config disk
-	agentMgr, err := agentmgr.NewAgentManager(c.config.VMPublicKey)
+	agentMgr, err := agentmgr.NewAgentManager(c.config)
 	if err != nil {
 		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapError(err, "creating agent manager")
 	}

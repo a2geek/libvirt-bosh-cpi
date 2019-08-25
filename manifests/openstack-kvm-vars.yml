@@ -1,5 +1,4 @@
 # Rendered with Go text templates, see https://golang.org/pkg/text/template/
-libvirt_stemcell_formats: [ "openstack-qcow2", "openstack-raw" ]
 libvirt_network_dhcp_ip: |
   <host name='{{.VmName}}' mac='{{.MacAddress}}' ip='{{.IpAddress}}'/>
 libvirt_disk_device: |
