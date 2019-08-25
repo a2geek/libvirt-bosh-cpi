@@ -3,7 +3,7 @@ A Go BOSH CPI for the [libvirt virtualization API](https://libvirt.org/).
 
 ## Status
 
-BOSH director can be stood up. Stemcell can now be uploaded. A number of BOSH deploys can be done.
+Many things do work at this point. Most likely a BOSH deployment will successfully _deploy_. Longer term management (resizing disks or snapshotting vms, for instance) either are untested or unimplemented at this point.
 
 Known TODOs:
 * Network is currently assigned via DHCP in the Libvirt settings. Investigate if this can be altered to be configured by the agent.
@@ -54,7 +54,7 @@ stemcell:
 
 ### vSphere
 
-> NOTE: `CDROM` not yet implemented.
+> NOTE: When tested with a vSphere stemcell, the resulting VM did not respond. 
 
 ```
 stemcell:
@@ -67,7 +67,7 @@ stemcell:
 
 ## Tinkering
 
-Expect things to not work. This is all setup for Ubuntu Bionic (18.04) using QEMU/KVM for the Libvirt virtualization component.
+This is all setup for Ubuntu Bionic (18.04) using QEMU/KVM for the Libvirt virtualization component and Openstack stemcell.
 
 All commands should be run from the root of this repository.
 

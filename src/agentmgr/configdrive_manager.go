@@ -20,7 +20,7 @@ import (
 
 // NewConfigDriveManager will initalize a new config drive for AgentEnv settings
 func NewConfigDriveManager(config config.Config) (AgentManager, error) {
-	name, err := tempFileName()
+	name, err := tempFileName("fat32")
 	if err != nil {
 		return nil, bosherr.WrapError(err, "unable to generate agent config disk temp file")
 	}
@@ -37,7 +37,7 @@ func NewConfigDriveManager(config config.Config) (AgentManager, error) {
 
 // NewConfigDriveManagerFromData will allow AgentEnv settings updates on an existing config drive
 func NewConfigDriveManagerFromData(config config.Config, data []byte) (AgentManager, error) {
-	name, err := tempFileName()
+	name, err := tempFileName("fat32")
 	if err != nil {
 		return nil, bosherr.WrapError(err, "unable to generate agent config disk temp file")
 	}
@@ -61,23 +61,6 @@ type publicKeyType map[string]string
 type configDriveManager struct {
 	diskFileName string
 	config       config.Config
-}
-
-func tempFileName() (string, error) {
-	f, err := ioutil.TempFile("", "config-disk")
-	if err != nil {
-		return "", err
-	}
-	name := f.Name()
-	err = f.Close()
-	if err != nil {
-		return "", err
-	}
-	err = os.Remove(name)
-	if err != nil {
-		return "", err
-	}
-	return name, nil
 }
 
 func (c configDriveManager) Update(agentEnv apiv1.AgentEnv) error {

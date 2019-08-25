@@ -28,6 +28,8 @@ github.com/diskfs/go-diskfs/partition/gpt
 github.com/nu7hatch/gouuid
 # github.com/pkg/errors v0.8.1
 github.com/pkg/errors
+# github.com/rn/iso9660wrap v0.0.0-20180101235755-3a04f8ca150a
+github.com/rn/iso9660wrap
 # github.com/satori/go.uuid v1.2.0
 github.com/satori/go.uuid
 # golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa
