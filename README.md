@@ -39,7 +39,7 @@ stemcell:
 
 ### Azure
 
-> NOTE: The `label` is too long for current config disk capabilities. At a minimum.
+> NOTE: The `label` is too long for current config disk capabilities. At a minimum, there may be other issues.
 
 ```
 stemcell:
@@ -53,6 +53,8 @@ stemcell:
 [Source](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_azure_agent_settings/apply.sh)
 
 ### vSphere
+
+> NOTE: `CDROM` not yet implemented.
 
 ```
 stemcell:
