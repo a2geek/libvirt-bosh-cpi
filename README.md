@@ -54,7 +54,7 @@ stemcell:
 
 ### vSphere
 
-> NOTE: When tested with a vSphere stemcell, the resulting VM did not respond. 
+> NOTE: When tested with a vSphere stemcell, the CPI failed unable to attach `/dev/sr0`.
 
 ```
 stemcell:

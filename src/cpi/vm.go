@@ -3,6 +3,7 @@ package cpi
 import (
 	"fmt"
 	"libvirt-bosh-cpi/agentmgr"
+	"strings"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"github.com/cppforlife/bosh-cpi-go/apiv1"
@@ -202,6 +203,10 @@ func (c CPI) ephemeralDiskName(cid string) string {
 
 func (c CPI) configDiskName(cid string) string {
 	return fmt.Sprintf("cdisk-%s", cid)
+}
+
+func (c CPI) isConfigDisk(cid string) bool {
+	return strings.HasPrefix(cid, "cdisk-")
 }
 
 func (c CPI) vmName(cid string) string {

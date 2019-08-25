@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -42,11 +43,19 @@ func (c CPI) CreateStemcell(imagePath string, cloudProps apiv1.StemcellCloudProp
 		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "gunzip imagePath '%s'", imagePath)
 	}
 
-	// Assume first file is the one we want. Flexible or failure?
+	// Search for a biggish file (100MB+) to bypass the smaller metadata details. Which are ignored. Bug or feature?
 	tf := tar.NewReader(gz)
-	_, err = tf.Next()
-	if err != nil {
-		return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "tar.next for imagePath '%s'", imagePath)
+	found := false
+	for !found {
+		h, err := tf.Next()
+		if err != nil {
+			return apiv1.StemcellCID{}, bosherr.WrapErrorf(err, "tar.next for imagePath '%s'", imagePath)
+		}
+
+		found = h.Size > 104857600
+	}
+	if !found {
+		return apiv1.StemcellCID{}, errors.New("unable to locate stemcell in archive")
 	}
 
 	_, err = c.manager.CreateStorageVolumeFromImage(name, tf, props.Disk)

@@ -49,7 +49,9 @@ type TargetDiskDeviceXml struct {
 
 type StorageVolXml struct {
 	Type         string `xml:"type,attr"`
+	Device       string `xml:"-"`
 	Name         string `xml:"name"`
 	TargetPath   string `xml:"target>path"`
+	TargetBus    string `xml:"-"`
 	TargetDevice string `xml:"-"`
 }

@@ -273,7 +273,12 @@ func (m libvirtManager) DomainAttachDisk(vmName string, storageVol StorageVolXml
 	if active != 0 {
 		flags |= libvirt.DomainDeviceModifyLive
 	}
-	return m.client.DomainAttachDeviceFlags(vm, xml.String(), uint32(flags))
+	err = m.client.DomainAttachDeviceFlags(vm, xml.String(), uint32(flags))
+	if err != nil {
+		return bosherr.WrapErrorf(err, "unable to attach, disk xml = %s", xml.String())
+	}
+
+	return nil
 }
 
 func (m libvirtManager) DomainDetachDisk(vmName string, storageVol StorageVolXml) error {

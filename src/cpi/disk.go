@@ -112,7 +112,15 @@ func (c CPI) attachDiskDevice(vmName, diskName, deviceName string) error {
 	if err != nil {
 		return bosherr.WrapErrorf(err, "unable to unmarshal storage volume XML: %s", xmlstring)
 	}
-	storageVol.TargetDevice = deviceName
+	if c.isConfigDisk(diskName) && c.config.Stemcell.Type == "CDROM" {
+		storageVol.Device = "cdrom"
+		storageVol.TargetDevice = "sr0"
+		storageVol.TargetBus = "scsi"
+	} else {
+		storageVol.Device = "disk"
+		storageVol.TargetDevice = deviceName
+		storageVol.TargetBus = "virtio"
+	}
 
 	return c.manager.DomainAttachDisk(vmName, storageVol)
 }

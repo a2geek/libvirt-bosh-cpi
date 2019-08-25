@@ -2,10 +2,10 @@
 libvirt_network_dhcp_ip: |
   <host name='{{.VmName}}' mac='{{.MacAddress}}' ip='{{.IpAddress}}'/>
 libvirt_disk_device: |
-  <disk type='file' device='disk'>
+  <disk type='file' device='{{.Device}}'>
     <driver name='qemu' type='raw' cache='none'/>
     <source file='{{.TargetPath}}'/>
-    <target dev='{{.TargetDevice}}' bus='virtio'/>
+    <target dev='{{.TargetDevice}}' bus='{{.TargetBus}}'/>
   </disk>
 libvirt_storage_volume: |
   <volume>
