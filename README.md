@@ -85,7 +85,7 @@ All commands should be run from the root of this repository.
    ```
    Set the `LIBVIRT_CONNECTIVITY` variable:
    ```
-   $ export LIBVIRT_CONNECTIVITY=libvirt_socket.yml
+   $ export LIBVIRT_CONNECTIVITY=libvirt-socket.yml
    ```
    b. `tcp`: Unsecured access via TCP. See the [Libvirt "Remote support"](https://libvirt.org/remote.html) page for details on how to set up TCP.
    ```
@@ -94,7 +94,7 @@ All commands should be run from the root of this repository.
    ```
    Set the `LIBVIRT_CONNECTIVITY` variable:
    ```
-   $ export LIBVIRT_CONNECTIVITY=libvirt_tcp.yml
+   $ export LIBVIRT_CONNECTIVITY=libvirt-tcp.yml
    ```
    c. `tls`: Secured access via TLS. See the [Libvirt "Remote support"](https://libvirt.org/remote.html) page for details on how to set up TLS connections and generate the various certificates.
    ```
@@ -115,7 +115,7 @@ All commands should be run from the root of this repository.
    ```
    Set the `LIBVIRT_CONNECTIVITY` variable:
    ```
-   $ export LIBVIRT_CONNECTIVITY=libvirt_tls.yml
+   $ export LIBVIRT_CONNECTIVITY=libvirt-tls.yml
    ```
 
 3. Create a release. Only needed first time and if there are any code changes.
@@ -132,14 +132,14 @@ All commands should be run from the root of this repository.
        --ops-file=${BOSH_DEPLOYMENT_DIR}/bbr.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/uaa.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/credhub.yml \
-       --ops-file=manifests/libvirt_cpi.yml \
+       --ops-file=manifests/libvirt-cpi.yml \
        --ops-file=manifests/${LIBVIRT_CONNECTIVITY} \
        --ops-file=manifests/openstack-stemcell.yml \
        --state=state.json \
        --vars-store=bosh-creds.yml \
        --vars-file=my-settings.yml \
        --vars-file=manifests/bosh-vars.yml \
-       --vars-file=manifests/openstack-kvm-vars.yml
+       --vars-file=manifests/libvirt-kvm-vars.yml
    ```
    Notes:
    * `jumpbox-user.yml` operations file gives access to a user on the BOSH Director that has access to the `root` account. Useful for development work - feel free to leave it off.
