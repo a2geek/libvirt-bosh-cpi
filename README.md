@@ -132,6 +132,7 @@ All commands should be run from the root of this repository.
        --ops-file=${BOSH_DEPLOYMENT_DIR}/credhub.yml \
        --ops-file=manifests/libvirt_cpi.yml \
        --ops-file=manifests/${LIBVIRT_CONNECTIVITY} \
+       --ops-file=manifests/openstack-stemcell.yml \
        --state=state.json \
        --vars-store=bosh-creds.yml \
        --vars-file=my-settings.yml \
