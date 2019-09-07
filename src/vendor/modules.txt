@@ -14,7 +14,7 @@ github.com/cppforlife/bosh-cpi-go/rpc
 github.com/digitalocean/go-libvirt
 github.com/digitalocean/go-libvirt/internal/constants
 github.com/digitalocean/go-libvirt/internal/go-xdr/xdr2
-# github.com/diskfs/go-diskfs v0.0.0-20190517155712-1190dcf1ff31 => github.com/a2geek/go-diskfs v0.0.0-20190810191223-f09edeb3e6a4
+# github.com/diskfs/go-diskfs v0.0.0-20190829135618-cf5830e4e419
 github.com/diskfs/go-diskfs
 github.com/diskfs/go-diskfs/disk
 github.com/diskfs/go-diskfs/filesystem
@@ -32,5 +32,5 @@ github.com/pkg/errors
 github.com/rn/iso9660wrap
 # github.com/satori/go.uuid v1.2.0
 github.com/satori/go.uuid
-# golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa
+# golang.org/x/sys v0.0.0-20190907184412-d223b2b6db03
 golang.org/x/sys/unix
