@@ -44,6 +44,7 @@ type SourceDiskDeviceXml struct {
 	File string `xml:"file,attr"`
 }
 type TargetDiskDeviceXml struct {
+	Bus string `xml:"bus,attr"`
 	Dev string `xml:"dev,attr"`
 }
 

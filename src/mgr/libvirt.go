@@ -287,7 +287,7 @@ func (m libvirtManager) DomainDetachDisk(vmName string, storageVol StorageVolXml
 		return bosherr.WrapErrorf(err, "unable to find '%s' VM", vmName)
 	}
 
-	tmpl, err := template.New("attach-device").Parse(m.settings.DiskDeviceXml)
+	tmpl, err := template.New("detach-device").Parse(m.settings.DiskDeviceXml)
 	if err != nil {
 		return bosherr.WrapError(err, "unable to parse storage volume XML")
 	}
@@ -299,7 +299,12 @@ func (m libvirtManager) DomainDetachDisk(vmName string, storageVol StorageVolXml
 	}
 
 	flags := libvirt.DomainDeviceModifyConfig | libvirt.DomainDeviceModifyLive
-	return m.client.DomainDetachDeviceFlags(vm, xml.String(), uint32(flags))
+	err = m.client.DomainDetachDeviceFlags(vm, xml.String(), uint32(flags))
+	if err != nil {
+		return bosherr.WrapErrorf(err, "request xml is '%s'", xml.String())
+	}
+
+	return nil
 }
 
 func (m libvirtManager) DomainLookupByName(name string) (libvirt.Domain, error) {

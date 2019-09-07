@@ -149,6 +149,8 @@ func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 
 	for _, disk := range devices.Disks {
 		if strings.Contains(disk.Source.File, diskCID.AsString()) {
+			storageVol.Device = disk.Device
+			storageVol.TargetBus = disk.Target.Bus
 			storageVol.TargetDevice = disk.Target.Dev
 		}
 	}
