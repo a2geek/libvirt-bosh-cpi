@@ -12,6 +12,6 @@ Many things do work at this point and the CPI is pretty stable. Most likely a BO
 * [Setup the BOSH Director](docs/INSTALL.md)
 * [Useful Utilities](docs/UTILITIES.md)
 * [Deploying Software to BOSH](docs/DEPLOYMENT.md)
-* [Development notes](docs/DEVELOPMENT.md)
+* [Development notes](docs/DEVELOPING.md)
 * [Stemcell experiments](docs/STEMCELLS.md)
 * [TODO list](docs/TODO.md)
