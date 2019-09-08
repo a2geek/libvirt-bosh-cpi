@@ -6,9 +6,15 @@ Current Agent configurations support `ConfigDrive` only, but `CDROM` could be ad
 
 These are all presumed to be run against some valid Libvirt provider. Thus, there is a chance that the Azure stemcell will work under Libvirt running on KVM.  Hypothetically.
 
-Note that, when trying to identify stemcells, every single one ran under Libvirt/QEMU _except_ for Warden which ships as a GZipped TAR file.  Ultimately, Openstack was settled upon (for no technical reason).  vSphere was hard to confirm due to the initial stemcell password being something different.
+Note that, when trying to identify stemcells, every single one ran under Libvirt/QEMU _except_ for Warden which ships as a GZipped TAR file.  
+
+Ultimately, Openstack was settled upon (for no particular technical reason).  
+
+vSphere was hard to confirm due to the initial stemcell password being something different.
 
 ## Openstack
+
+Use `--ops-file=manifests/openstack-stemcell.yml` in the BOSH Directory deployment. (Note that this is the current default.)
 
 ```
 stemcell:
@@ -22,6 +28,8 @@ stemcell:
 [Source](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_openstack_agent_settings/apply.sh)
 
 ## Azure
+
+Use `--ops-file=manifests/azure-stemcell.yml` in the BOSH Directory deployment.
 
 > NOTE: The `label` is too long for current config disk capabilities. At a minimum, there may be other issues.
 
@@ -37,6 +45,8 @@ stemcell:
 [Source](https://github.com/cloudfoundry/bosh-linux-stemcell-builder/blob/master/stemcell_builder/stages/bosh_azure_agent_settings/apply.sh)
 
 ## vSphere
+
+Use `--ops-file=manifests/vsphere-stemcell.yml` in the BOSH Directory deployment.
 
 > NOTE: When tested with a vSphere stemcell, the CPI failed unable to attach `/dev/sr0`.
 
