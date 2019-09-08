@@ -97,20 +97,7 @@ Generally, the Kubo Release instructions were used:
     ```
     $ kubectl create serviceaccount tiller --namespace kube-system
     serviceaccount/tiller created
-    $ cat > tiller-clusterrolebinding.yml
-    kind: ClusterRoleBinding
-    apiVersion: rbac.authorization.k8s.io/v1beta1
-    metadata:
-      name: tiller-clusterrolebinding
-    subjects:
-    - kind: ServiceAccount
-      name: tiller
-      namespace: kube-system
-    roleRef:
-      kind: ClusterRole
-      name: cluster-admin
-      apiGroup: ""
-    $ kubectl create -f tiller-clusterrolebinding.yml
+    $ kubectl create -f manifests/tiller-clusterrolebinding.yml
     clusterrolebinding.rbac.authorization.k8s.io/tiller-clusterrolebinding created
     $ helm init --service-account tiller --upgrade
     $HELM_HOME has been configured at /home/rob/.helm.
