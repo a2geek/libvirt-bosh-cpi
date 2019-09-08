@@ -1,6 +1,6 @@
 # Kubo (Kubernetes)
 
-> NOTE: The CPI appears to handle to deployment without issues. However, the Kubernetes installation doesn't appear to handle storage volumes. It is uncertain if this is due to a lack of understanding on how to set it up, lack of Libvirt support, or possibly something related to the BOSH CPI (likely doubtful).
+> NOTE: The CPI appears to handle to deployment without issues. However, the Kubernetes installation doesn't appear to handle storage volumes. It is uncertain if this is due to a lack of understanding on how to set it up, lack of Libvirt support, or possibly something related to the BOSH CPI (likely doubtful).  Initial request for help is [kubo-release/issue/352](https://github.com/cloudfoundry-incubator/kubo-release/issues/352).
 
 Generally, the Kubo Release instructions were used:
 
