@@ -9,7 +9,7 @@ require (
 	github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd
 	github.com/digitalocean/go-libvirt v0.0.0-20190626172931-4d226dd6c437 // GOOD
 	//github.com/digitalocean/go-libvirt v0.0.0-20190715144809-7b622097a793 // BAD
-	github.com/diskfs/go-diskfs v0.0.0-20190829135618-cf5830e4e419
+	github.com/diskfs/go-diskfs v0.0.0-20190908084356-97765bad053b
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
