@@ -19,14 +19,14 @@ $ bosh -n -d cf deploy $CF_DEPLOYMENT_DIR/cf-deployment.yml \
     --vars-store=cf-creds.yml
 ```
 
-Note that there is a requirement for DNS resolution to `*.sys.mypcf.lan` as currently configured. `/etc/hosts` can be used as a hack for validation.
+Note that there is a requirement for DNS resolution to `*.sys.mycf.lan` as currently configured. `/etc/hosts` can be used as a hack for validation.
 
 ```
-$ cat /etc/hosts | grep mypcf
-192.168.123.252 api.sys.mypcf.lan login.sys.mypcf.lan sample1.sys.mypcf.lan
+$ cat /etc/hosts | grep mycf
+192.168.123.252 api.sys.mycf.lan login.sys.mycf.lan sample1.sys.mycf.lan
 ```
 
-> If you use DD-WRT, you can also add wildcard entries of `address=/.mypcf.lan/192.168.123.252` and `address=/.sys.mypcf.lan/192.168.123.252` and setup a routing entry to direct all `192.168.123.*` entries to the host machine's IP address.
+> If you use DD-WRT, you can also add wildcard entries of `address=/.mycf.lan/192.168.123.252` and `address=/.sys.mycf.lan/192.168.123.252` and setup a routing entry to direct all `192.168.123.*` entries to the host machine's IP address.
 
 To get the CF admin credentials, there are a few hoops.
 
@@ -44,14 +44,14 @@ Login Successful
 To get the CF admin credentials and login to CF _as an admin_:
 ```
 $ source scripts/cf-env.sh
-$ cf api https://api.sys.mypcf.lan --skip-ssl-validation
-Setting api endpoint to https://api.sys.mypcf.lan...
+$ cf api https://api.sys.mycf.lan --skip-ssl-validation
+Setting api endpoint to https://api.sys.mycf.lan...
 OK
 
-api endpoint:   https://api.sys.mypcf.lan
+api endpoint:   https://api.sys.mycf.lan
 api version:    2.139.0
 $ cf auth
-API endpoint: https://api.sys.mypcf.lan
+API endpoint: https://api.sys.mycf.lan
 Authenticating...
 OK
 
@@ -69,7 +69,7 @@ OK
 
 TIP: Use 'cf target -o "rob"' to target new org
 $ cf target -o rob
-api endpoint:   https://api.sys.mypcf.lan
+api endpoint:   https://api.sys.mycf.lan
 api version:    2.139.0
 user:           admin
 org:            rob
@@ -86,14 +86,14 @@ OK
 
 TIP: Use 'cf target -o "rob" -s "dev"' to target new space
 $ cf target -s dev
-api endpoint:   https://api.sys.mypcf.lan
+api endpoint:   https://api.sys.mycf.lan
 api version:    2.139.0
 user:           admin
 org:            rob
 space:          dev
 ```
 
-Note that `sample1.sys.mypcf.lan` is just for a quick test deploy like this:
+Note that `sample1.sys.mycf.lan` is just for a quick test deploy like this:
 ```
 $ mkdir staticfile-sample
 $ cd staticfile-sample
@@ -107,7 +107,7 @@ applications:
   - staticfile_buildpack
   memory: 32M
   routes:
-  - route: sample1.mypcf.lan
+  - route: sample1.mycf.lan
 ^D
 staticfile-samplestatic-site$ cf push -f manifest.yml -p .
 <snip>
@@ -116,8 +116,8 @@ Getting apps in org rob / space dev as admin...
 OK
 
 name      requested state   instances   memory   disk   urls
-sample1   started           1/1         32M      1G     sample1.mypcf.lan
-$ curl http://sample1.mypcf.lan
+sample1   started           1/1         32M      1G     sample1.mycf.lan
+$ curl http://sample1.mycf.lan
 Hello World!
 ```
 
