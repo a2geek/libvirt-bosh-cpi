@@ -1,2 +1,5 @@
 system_domain: sys.mypcf.lan
 router_static_ips: [192.168.123.252]
+app_domains:
+- name: mypcf.lan
+smoke_test_app_domain: mypcf.lan
