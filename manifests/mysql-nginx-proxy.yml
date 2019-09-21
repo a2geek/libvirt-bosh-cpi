@@ -1,0 +1,103 @@
+---
+name: mysql-nginx-proxy
+
+releases:
+- name: "nginx"
+  version: "1.17.0"
+  url: "https://bosh.io/d/github.com/cloudfoundry-community/nginx-release?v=1.17.0"
+  sha1: "13cf87b2394c7d3924f9d66836c56302fb46a90d"
+
+stemcells:
+- alias: ubuntu
+  os: ubuntu-xenial
+  version: latest
+
+instance_groups:
+- name: nginx
+  instances: 1
+  azs: [ z1 ]
+  vm_type: default
+  persistent_disk_type: default
+  stemcell: ubuntu
+  networks:
+  - name: default
+    static_ips: [ 192.168.123.250 ]
+  jobs:
+  - name: nginx
+    release: nginx
+    properties:
+      nginx_conf: |
+        user nobody vcap; # group vcap can read most directories
+        worker_processes  1;
+        error_log /var/vcap/sys/log/nginx/error.log   info;
+
+        events {
+          worker_connections  1024;
+        }
+
+        stream {
+          upstream mysql_servers {
+            server 192.168.123.28:3306;
+            server 192.168.123.29:3306;
+          }
+
+          server {
+            listen 3306;
+            proxy_pass mysql_servers;
+            # health_check port=1936 passes=2 fails=3 match=mysql_health;
+            # health_check_timeout 5s;
+          }
+
+          # match mysql_health {
+          #   send "GET / HTTP/1.0\r\n\r\n";
+          #   expect ~* "200 OK";
+          # }
+        }
+
+## vv DO NOT NEED THESE! Clean up later... vv
+        http {
+          upstream broker_servers {
+            ip_hash;
+            server 192.168.123.30:8081;
+            server 192.168.123.31:8081;
+          }
+
+          server {
+            listen 443 ssl;
+            server_name p-mysql.sys.mycf.lan;
+
+            #ssl on;
+            ssl_certificate         /var/vcap/jobs/nginx/etc/ssl_chained.crt.pem;
+            ssl_certificate_key     /var/vcap/jobs/nginx/etc/ssl.key.pem;
+
+            location / {
+              proxy_set_header Host $host;
+              proxy_pass http://broker_servers;
+            }
+          }
+        }
+      ssl_chained_cert: |
+        ((mysql_nginx_proxy_cert.certificate))
+      ssl_key: |
+        ((mysql_nginx_proxy_cert.private_key))
+
+variables:
+- name: mysql_nginx_proxy_ca
+  type: certificate
+  options:
+    is_ca: true
+    common_name: mysql-nginx-proxy
+- name: mysql_nginx_proxy_cert
+  type: certificate
+  options:
+    ca: mysql_nginx_proxy_ca
+    common_name: p-mysql.sys.mycf.lan
+    alternative_names:
+    - 192.168.123.250
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  serial: false
+  canary_watch_time: 1000-60000
+  update_watch_time: 1000-60000

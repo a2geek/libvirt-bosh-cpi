@@ -45,36 +45,21 @@ networks:
   subnets:
   - azs: [z1,z2,z3]
     range: 192.168.123.0/24
-    dns: [8.8.8.8]
+    dns: [192.168.5.1]
     reserved: 192.168.123.2-192.168.123.10
     gateway: 192.168.123.1
     static: 192.168.123.250-192.168.123.254
 
 vm_extensions:
-# Used by cf-deployment
-# - name: 5GB_ephemeral_disk
-#   cloud_properties:
-#     ephemeral_disk: 5_120
-# - name: 10GB_ephemeral_disk
-#   cloud_properties:
-#     ephemeral_disk: 10_240
 - name: 50GB_ephemeral_disk
   cloud_properties:
     ephemeral_disk: 51_200
 - name: 100GB_ephemeral_disk
   cloud_properties:
     ephemeral_disk: 102_400
-# - name: 500GB_ephemeral_disk
-#   cloud_properties:
-#     ephemeral_disk: 512_000
-# - name: 1TB_ephemeral_disk
-#   cloud_properties:
-#     ephemeral_disk: 1_024_000
 - name: diego-ssh-proxy-network-properties
-# - name: ssh-proxy-and-router-lb
 - name: cf-router-network-properties
 - name: cf-tcp-router-network-properties
-# - name: credhub-lb
 
 compilation:
   workers: 5

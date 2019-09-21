@@ -1,0 +1,4 @@
+cf_mysql_external_host: cf-mysql.sys.mycf.lan
+cf_api_url: https://api.sys.mycf.lan
+cf_skip_ssl_validation: true
+cf_mysql_host: mysql.sys.mycf.lan
