@@ -14,7 +14,6 @@ $ bosh -n -d cf deploy $CF_DEPLOYMENT_DIR/cf-deployment.yml \
     -o $CF_DEPLOYMENT_DIR/operations/set-router-static-ips.yml \
     -o $CF_DEPLOYMENT_DIR/operations/use-compiled-releases.yml \
     -o $CF_DEPLOYMENT_DIR/operations/use-latest-stemcell.yml \
-    -o $CF_DEPLOYMENT_DIR/operations/override-app-domains.yml \
     -l manifests/cloudfoundry-vars.yml \
     --vars-store=cf-creds.yml
 ```
@@ -28,11 +27,9 @@ $ cat /etc/hosts | grep mycf
 
 > If you use DD-WRT, you can also add wildcard entries of `address=/.mycf.lan/192.168.123.252` and `address=/.sys.mycf.lan/192.168.123.252` and setup a routing entry to direct all `192.168.123.*` entries to the host machine's IP address.
 
-To get the CF admin credentials, there are a few hoops.
-
 Get the CredHub admin credentials and login to CredHub:
 ```
-$ source scripts/credhub-env.sh 
+$ source scripts/credhub-env.sh
 $ credhub login
 Setting the target url: https://192.168.123.7:8844
 Login Successful

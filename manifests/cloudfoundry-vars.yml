@@ -1,5 +1,2 @@
 system_domain: sys.mycf.lan
 router_static_ips: [192.168.123.252]
-app_domains:
-- name: mycf.lan
-smoke_test_app_domain: mycf.lan
