@@ -25,5 +25,6 @@ These deployments can be used as a starting point!
 * [Postgres](POSTGRES.md)
 * [Concourse](CONCOURSE.md)
 * [Cloud Foundry](CF.md)
-* [CF MySQL](CF_MYSQL.md) brokered service
+* [CF MySQL](CF_MYSQL.md) - brokered service
+* [CF Redis](CF_REDIS.md) - brokered service
 * [Kubo/Kubernetes](KUBO.md)

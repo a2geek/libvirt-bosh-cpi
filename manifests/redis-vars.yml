@@ -1,0 +1,27 @@
+# From vars-lite.yml
+deployment_name: cf-redis
+broker_name: cf-redis-broker
+service_name: p-redis
+dedicated_vm_plan_id: 826855a8-abf3-46c2-a8fb-5e0756fba6a3
+service_id: d341cc35-ba70-4043-81f2-328e1d3f33d5
+shared_vm_plan_id: eec11e5d-ee4f-4c2d-b6da-9e594f1b16c2
+dedicated_node_count: 0
+dedicated_nodes_ips: []
+default_vm_type: default
+default_persistent_disk_type: default
+default_network: default
+default_az: z1
+stemcell_os: ubuntu-xenial
+stemcell_version: latest
+cf_deployment_name: cf
+system_domain: sys.mycf.lan
+apps_domain: mycf.lan
+broker_username: broker
+cf_username: admin
+syslog_endpoint_host: 127.0.0.1
+syslog_endpoint_port: 1234
+
+# Discovered
+routing_version: latest
+bpm_version: latest
+syslog_version: latest
