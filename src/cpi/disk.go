@@ -172,8 +172,9 @@ func (c CPI) SetDiskMetadata(cid apiv1.DiskCID, metadata apiv1.DiskMeta) error {
 	return nil
 }
 
-func (c CPI) ResizeDisk(cid apiv1.DiskCID, size int) error {
-	return c.manager.StorageVolResize(cid.AsString(), uint64(size))
+func (c CPI) ResizeDisk(cid apiv1.DiskCID, sizeInMegabytes int) error {
+	sizeInBytes := sizeInMegabytes * bytesPerMegabyte
+	return c.manager.StorageVolResize(cid.AsString(), uint64(sizeInBytes))
 }
 
 func (c CPI) SnapshotDisk(cid apiv1.DiskCID, meta apiv1.DiskMeta) (apiv1.SnapshotCID, error) {
