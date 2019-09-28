@@ -1,6 +1,7 @@
 # TODOs
 
 * Network is currently assigned via DHCP in the Libvirt settings. Investigate if this can be altered to be configured by the agent.
+* Network only supports `manual` networks at this time. (Have not run across any other type at this point.)
 * Disks are assigned statically; thus more than one of a type will fail. Current scheme:
   * `/dev/vda`: boot disk
   * `/dev/vdb`: ephemeral disk (optional?)

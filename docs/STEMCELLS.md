@@ -31,7 +31,7 @@ stemcell:
 
 Use `--ops-file=manifests/azure-stemcell.yml` in the BOSH Directory deployment.
 
-> NOTE: The `label` is too long for current config disk capabilities. At a minimum, there may be other issues.
+> NOTE: The `label` is too long for current config disk capabilities.
 
 ```
 stemcell:

@@ -14,7 +14,13 @@ Many things do work at this point and the CPI is pretty stable. Most likely a BO
 
 Feel free to try it out! Feedback and PR's are welcome.
 
-## Documentation
+# Tickets being watched
+
+* Blocking IaaS provided disk resize: [ticket](https://github.com/cloudfoundry/bosh-agent/issues/221)
+* Issues with TLS connections after a certain commit: [ticket](https://github.com/digitalocean/go-libvirt/issues/89)
+* Libvirt command switcheroo (work-around in place): [ticket](https://github.com/digitalocean/go-libvirt/issues/87)
+
+# Documentation
 
 * [Libvirt Configuration](docs/CONFIG.md)
 * [Setup the BOSH Director](docs/INSTALL.md)
