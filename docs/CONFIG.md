@@ -111,7 +111,7 @@ virsh # net-dumpxml default
 
 ## Remote access
 
-Follow the documenation provided on the Libvirt site to generate certificates:
+Follow the documentation provided on the Libvirt site to generate certificates:
 * [Libvirt "Remote support"](https://libvirt.org/remote.html)
 
 Note that the `serverkey.pem` file likely needs to be in `/etc/pki/libvirt/private/` instead based on Ubuntu configurations, rather that the documented `/etc/pki/libvirt` directory.
