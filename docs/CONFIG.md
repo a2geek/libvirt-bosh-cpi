@@ -119,7 +119,7 @@ Note that the `serverkey.pem` file likely needs to be in `/etc/pki/libvirt/priva
 Copying files into place:
 
 ```
-$ mkdir -p /etc/pki/CA /etc/pki/libvirt/private
+$ sudo mkdir -p /etc/pki/CA /etc/pki/libvirt/private
 $ sudo cp cacert.pem /etc/pki/CA/cacert.pem
 $ sudo cp servercert.pem /etc/pki/libvirt/
 $ sudo cp serverkey.pem /etc/pki/libvirt/private/
