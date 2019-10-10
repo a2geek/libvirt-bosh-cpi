@@ -111,5 +111,56 @@ virsh # net-dumpxml default
 
 ## Remote access
 
-Follow the documenation provided on the Libvirt site:
+Follow the documenation provided on the Libvirt site to generate certificates:
 * [Libvirt "Remote support"](https://libvirt.org/remote.html)
+
+Note that the `serverkey.pem` file likely needs to be in `/etc/pki/libvirt/private/` instead based on Ubuntu configurations, rather that the documented `/etc/pki/libvirt` directory.
+
+Copying files into place:
+
+```
+$ mkdir -p /etc/pki/CA /etc/pki/libvirt/private
+$ sudo cp cacert.pem /etc/pki/CA/cacert.pem
+$ sudo cp servercert.pem /etc/pki/libvirt/
+$ sudo cp serverkey.pem /etc/pki/libvirt/private/
+```
+
+For permissions, the Internet indicates the directories should be `700` and the files should be `600`:
+
+```
+$ sudo chmod 700 /etc/pki /etc/pki/CA /etc/pki/libvirt /etc/pki/libvirt/private
+$ sudo find /etc/pki -name "*.pem" -exec chmod 600 {} \;
+$ sudo find /etc/pki -ls
+ 14681727      4 drwx------   4 root     root         4096 Oct 10 02:45 /etc/pki
+ 14681728      4 drwx------   2 root     root         4096 Oct 10 02:44 /etc/pki/CA
+ 14681729      4 -rw-------   1 root     root         1432 Oct 10 02:44 /etc/pki/CA/cacert.pem
+ 14681730      4 drwx------   3 root     root         4096 Oct 10 03:47 /etc/pki/libvirt
+ 14681731      4 -rw-------   1 root     root         1598 Oct 10 02:45 /etc/pki/libvirt/servercert.pem
+ 14681635      4 drwx------   2 root     root         4096 Oct 10 03:45 /etc/pki/libvirt/private
+ 14681643      8 -rw-------   1 root     root         8170 Oct 10 03:45 /etc/pki/libvirt/private/serverkey.pem
+```
+
+To enable TLS, the config in `/etc/default/libvirtd` needs to be altered (note `libvirt_opts`):
+
+```
+# cat /etc/default/libvirtd
+# Defaults for libvirtd initscript (/etc/init.d/libvirtd)
+# This is a POSIX shell fragment
+
+# Start libvirtd to handle qemu/kvm:
+start_libvirtd="yes"
+
+# options passed to libvirtd, add "-l" to listen on tcp
+libvirtd_opts="-l"    # <== uncomment this line
+
+# pass in location of kerberos keytab
+#export KRB5_KTNAME=/etc/libvirt/libvirt.keytab
+
+# Whether to mount a systemd like cgroup layout (only
+# useful when not running systemd)
+#mount_cgroups=yes
+# Which cgroups to mount
+#cgroups="memory devices"
+```
+
+By default, TLS should be enabled and this should place the `*.pem` files into the correct locations.
