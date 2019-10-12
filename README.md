@@ -19,6 +19,7 @@ Feel free to try it out! Feedback and PR's are welcome.
 * Blocking IaaS provided disk resize: [ticket](https://github.com/cloudfoundry/bosh-agent/issues/221)
 * Issues with TLS connections after a certain commit: [ticket](https://github.com/digitalocean/go-libvirt/issues/89)
 * Libvirt command switcheroo (work-around in place): [ticket](https://github.com/digitalocean/go-libvirt/issues/87)
+* Libvirt enhancement request to allow network ingress to be specified via API: [ticket](https://bugzilla.redhat.com/show_bug.cgi?id=1761123)
 
 # Documentation
 

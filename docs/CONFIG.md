@@ -3,7 +3,7 @@
 There are a few things to configure with Libvirt with respect to BOSH.
 
 1. Storage. A storage pool is required for the BOSH stemcells and all the VM disks. When tinkering, feel free to use default.
-2. Network. So far, the default network has been sufficient - a class "C" network (~254 IP addresses). Note that this appears to be random, so likely the IP addresses need to be adjusted.
+2. Network. The default network is managed by Libvirt and will prevent incoming connections from reaching the VM's. Therefore, an bridge needs to be created manually and a related network created in Libvirt.
 3. Remote access. Ultimately, the BOSH VM will be running within a Libvirt managed VM and will *not* have access to the default Unix socket.
 
 ## Storage
@@ -82,31 +82,72 @@ virsh # exit
 
 ## Network
 
-Sample of a default network that was generated:
+The `default` network in Libvirt doesn't allow API level integration to enable "public" IP's.  That makes, for instance, the `bosh` VM unreachable from a remote machine.
+
+To overcome this, create a bridge network. (Note that this was a struggle for me, so if you know better do what you know.)
+
+Ubuntu Server now comes with [Netplan](https://netplan.io/) installed. Backup the existing `/etc/netplan/50-cloud-init.yaml` and replace it with something like this:
 
 ```
-virsh # net-list
- Name                 State      Autostart     Persistent
-----------------------------------------------------------
- default              active     yes           yes
+$ cat /etc/netplan/50-cloud-init.yaml
+network:
+  version: 2
+  renderer: networkd
 
-virsh # net-dumpxml default
+  ethernets:
+    enp0s25:
+      dhcp4: true
+
+  bridges:
+    boshbr0:
+      addresses: 
+      - 192.168.124.1/24
+      interfaces:
+      - vlan15
+
+  vlans:
+    vlan15:
+      accept-ra: no
+      id: 15
+      link: enp0s25
+```
+
+To create the bridge, use `netplan apply` and verify via `brctl show` and `ifconfig` that things look as expected.
+
+In order for network packets to make it into the VMs, you'll need to update the forward rules. In my case, I'm just forwarding to all IP addresses and allowing all VMs to talk amongst themselves. If you need or want to lock these down more, you should be able to lock down ingress by IP or a smaller CIDR block (all VMs should be able to talk amongst themselves).
+
+```
+# iptables -A FORWARD -d 192.168.124.0/24 -o virbosh0 -j ACCEPT
+# iptables -A FORWARD -s 192.168.124.0/24 -i virbosh0 -j ACCEPT
+# iptables -A FORWARD -s 192.168.124.0/24 -d 192.168.124.0/24 -i virbosh0 -o virbr0 -j ACCEPT
+# iptables -L FORWARD
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+<snip>
+ACCEPT     all  --  anywhere             192.168.124.0/24    
+ACCEPT     all  --  192.168.124.0/24     anywhere   
+ACCEPT     all  --  192.168.124.0/24     192.168.124.0/24    
+<snip>
+```
+
+Finally, create the bridge in Libvirt:
+
+```
+$ cat network.xml 
 <network connections='25'>
-  <name>default</name>
-  <uuid>bcb85dc8-ad27-4861-9f85-692167fd79fa</uuid>
-  <forward mode='nat'>
-    <nat>
-      <port start='1024' end='65535'/>
-    </nat>
-  </forward>
-  <bridge name='virbr0' stp='on' delay='0'/>
-  <mac address='52:54:00:82:d1:6e'/>
-  <ip address='192.168.123.1' netmask='255.255.255.0'>
-    <dhcp>
-      <range start='192.168.123.2' end='192.168.123.254'/>
-    </dhcp>
-  </ip>
+  <name>bosh</name>
+  <forward mode='bridge'/>
+  <bridge name='boshbr0' />
 </network>
+$ virsh net-define network.xml 
+Network bosh defined from network.xml
+
+$ virsh net-start bosh
+Network bosh started
+
+$ virsh net-autostart bosh
+Network bosh marked as autostarted
+
 ```
 
 ## Remote access
