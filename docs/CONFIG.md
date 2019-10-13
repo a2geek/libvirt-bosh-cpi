@@ -116,6 +116,13 @@ To create the bridge, use `netplan apply` and verify via `brctl show` and `ifcon
 
 In order for network packets to make it into the VMs, you'll need to update the forward rules. In my case, I'm just forwarding to all IP addresses and allowing all VMs to talk amongst themselves. If you need or want to lock these down more, you should be able to lock down ingress by IP or a smaller CIDR block (all VMs should be able to talk amongst themselves).
 
+> NOTE NOTE NOTE 
+
+> These are not persistent at this point.
+> They will disapper upon reboot.
+
+> FIXME FIXME FIXME
+
 ```
 # iptables -A FORWARD -d 192.168.124.0/24 -o virbosh0 -j ACCEPT
 # iptables -A FORWARD -s 192.168.124.0/24 -i virbosh0 -j ACCEPT
@@ -129,6 +136,35 @@ ACCEPT     all  --  192.168.124.0/24     anywhere
 ACCEPT     all  --  192.168.124.0/24     192.168.124.0/24    
 <snip>
 ```
+
+Additionally, BOSH needs to get out to the internet and download software. I found that I needed to masquerade the VM packets (again, I am not a network person, so...):
+```
+## Do not masquerade to these reserved address blocks.
+# iptables -t nat -A POSTROUTING -s 192.168.124.0/24 -d 224.0.0.0/24 -j RETURN
+# iptables -t nat -A POSTROUTING -s 192.168.124.0/24 -d 255.255.255.255/32 -j RETURN
+## Masquerade all packets going from VMs to the LAN/Internet.
+# iptables -t nat -A POSTROUTING -s 192.168.124.0/24 ! -d 192.168.124.0/24 -p tcp -j MASQUERADE --to-ports 1024-65535
+# iptables -t nat -A POSTROUTING -s 192.168.124.0/24 ! -d 192.168.124.0/24 -p udp -j MASQUERADE --to-ports 1024-65535
+# iptables -t nat -A POSTROUTING -s 192.168.124.0/24 ! -d 192.168.124.0/24 -j MASQUERADE
+# iptables -t nat -L
+Chain PREROUTING (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain POSTROUTING (policy ACCEPT)
+target     prot opt source               destination         
+RETURN     all  --  192.168.124.0/24     base-address.mcast.net/24 
+RETURN     all  --  192.168.124.0/24     255.255.255.255     
+MASQUERADE  tcp  --  192.168.124.0/24    !192.168.124.0/24     masq ports: 1024-65535
+MASQUERADE  udp  --  192.168.124.0/24    !192.168.124.0/24     masq ports: 1024-65535
+MASQUERADE  all  --  192.168.124.0/24    !192.168.124.0/24    
+```
+(Pulled from [here](https://jamielinux.com/docs/libvirt-networking-handbook/custom-nat-based-network.html).)
 
 Finally, create the bridge in Libvirt:
 
