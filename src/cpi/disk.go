@@ -15,6 +15,7 @@ const bytesPerKilobyte = 1024
 const bytesPerMegabyte = bytesPerKilobyte * 1024
 
 func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
+	defer c.manager.Disconnect()
 	name := c.vmName(cid.AsString())
 
 	dom, err := c.manager.DomainLookupByName(name)
@@ -62,6 +63,8 @@ func (c CPI) discoverDisks(dom libvirt.Domain) ([]apiv1.DiskCID, error) {
 func (c CPI) CreateDisk(sizeInMegabytes int,
 	cloudProps apiv1.DiskCloudProps, associatedVMCID *apiv1.VMCID) (apiv1.DiskCID, error) {
 
+	defer c.manager.Disconnect()
+
 	uuid, err := c.uuidGen.Generate()
 	if err != nil {
 		return apiv1.DiskCID{}, bosherr.WrapError(err, "generating uuid")
@@ -79,6 +82,11 @@ func (c CPI) CreateDisk(sizeInMegabytes int,
 }
 
 func (c CPI) DeleteDisk(cid apiv1.DiskCID) error {
+	defer c.manager.Disconnect()
+	return c.deleteDisk(cid)
+}
+
+func (c CPI) deleteDisk(cid apiv1.DiskCID) error {
 	if err := c.manager.StorageVolDeleteByName(cid.AsString()); err != nil {
 		return bosherr.WrapErrorf(err, "deleting disk '%s'", cid.AsString())
 	}
@@ -92,6 +100,8 @@ func (c CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 }
 
 func (c CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskHint, error) {
+	defer c.manager.Disconnect()
+
 	err := c.attachDiskDevice(vmCID.AsString(), diskCID.AsString(), "vdd")
 	if err != nil {
 		return apiv1.NewDiskHintFromString(""), bosherr.WrapErrorf(err, "attaching disk '%s' to vm '%s'", diskCID.AsString(), vmCID.AsString())
@@ -126,6 +136,11 @@ func (c CPI) attachDiskDevice(vmName, diskName, deviceName string) error {
 }
 
 func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
+	defer c.manager.Disconnect()
+	return c.detachDisk(vmCID, diskCID)
+}
+
+func (c CPI) detachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 	xmlstring, err := c.manager.StorageVolGetXMLByName(diskCID.AsString())
 	if err != nil {
 		return bosherr.WrapErrorf(err, "detach/unable to locate storage volume '%s'", diskCID.AsString())
@@ -159,6 +174,8 @@ func (c CPI) DetachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 }
 
 func (c CPI) HasDisk(cid apiv1.DiskCID) (bool, error) {
+	defer c.manager.Disconnect()
+
 	vol, err := c.manager.StorageVolLookupByName(cid.AsString())
 	if err != nil {
 		return false, bosherr.WrapErrorf(err, "has disk on '%s'", cid.AsString())
@@ -168,20 +185,24 @@ func (c CPI) HasDisk(cid apiv1.DiskCID) (bool, error) {
 }
 
 func (c CPI) SetDiskMetadata(cid apiv1.DiskCID, metadata apiv1.DiskMeta) error {
+	defer c.manager.Disconnect()
 	// Libvirt does not appear to have metadata capability for a storage volume
 	return nil
 }
 
 func (c CPI) ResizeDisk(cid apiv1.DiskCID, sizeInMegabytes int) error {
+	defer c.manager.Disconnect()
 	sizeInBytes := sizeInMegabytes * bytesPerMegabyte
 	return c.manager.StorageVolResize(cid.AsString(), uint64(sizeInBytes))
 }
 
 func (c CPI) SnapshotDisk(cid apiv1.DiskCID, meta apiv1.DiskMeta) (apiv1.SnapshotCID, error) {
+	defer c.manager.Disconnect()
 	return apiv1.NewSnapshotCID("snap-cid"), nil
 }
 
 func (c CPI) DeleteSnapshot(cid apiv1.SnapshotCID) error {
+	defer c.manager.Disconnect()
 	return nil
 }
 

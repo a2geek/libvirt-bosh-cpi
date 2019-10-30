@@ -23,6 +23,8 @@ func (c CPI) CreateVMV2(
 	cloudProps apiv1.VMCloudProps, networks apiv1.Networks,
 	associatedDiskCIDs []apiv1.DiskCID, env apiv1.VMEnv) (apiv1.VMCID, apiv1.Networks, error) {
 
+	defer c.manager.Disconnect()
+
 	// UUID used for both VM, boot, and ephemeral disk
 	uuid, err := c.uuidGen.Generate()
 	if err != nil {
@@ -114,6 +116,8 @@ func (c CPI) CreateVMV2(
 }
 
 func (c CPI) DeleteVM(cid apiv1.VMCID) error {
+	defer c.manager.Disconnect()
+
 	dom, err := c.manager.DomainLookupByName(cid.AsString())
 	if err != nil {
 		return bosherr.WrapError(err, "unable to locate VM")
@@ -125,7 +129,7 @@ func (c CPI) DeleteVM(cid apiv1.VMCID) error {
 	}
 
 	for _, diskCID := range diskcids {
-		err = c.DetachDisk(cid, diskCID)
+		err = c.detachDisk(cid, diskCID)
 		if err != nil {
 			return bosherr.WrapErrorf(err, "unable to detach disk '%s' from vm '%s'", diskCID.AsString(), cid.AsString())
 		}
@@ -133,7 +137,7 @@ func (c CPI) DeleteVM(cid apiv1.VMCID) error {
 		if c.isPersistentDisk(diskCID.AsString()) {
 			// Ensure persistent disks are detached but not deleted!
 		} else {
-			err = c.DeleteDisk(diskCID)
+			err = c.deleteDisk(diskCID)
 			if err != nil {
 				return bosherr.WrapErrorf(err, "unable to delete disk '%s' (was attached to vm '%s')", diskCID.AsString(), cid.AsString())
 			}
@@ -144,6 +148,8 @@ func (c CPI) DeleteVM(cid apiv1.VMCID) error {
 }
 
 func (c CPI) CalculateVMCloudProperties(res apiv1.VMResources) (apiv1.VMCloudProps, error) {
+	defer c.manager.Disconnect()
+
 	props := make(map[string]interface{})
 	props["cpu"] = res.CPU
 	props["memory"] = res.RAM
@@ -152,6 +158,8 @@ func (c CPI) CalculateVMCloudProperties(res apiv1.VMResources) (apiv1.VMCloudPro
 }
 
 func (c CPI) SetVMMetadata(cid apiv1.VMCID, metadata apiv1.VMMeta) error {
+	defer c.manager.Disconnect()
+
 	m, err := NewActualVMMeta(metadata)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "unable to unmarshal metadata for '%s'", cid.AsString())
@@ -181,6 +189,8 @@ func (c CPI) SetVMMetadata(cid apiv1.VMCID, metadata apiv1.VMMeta) error {
 }
 
 func (c CPI) HasVM(cid apiv1.VMCID) (bool, error) {
+	defer c.manager.Disconnect()
+
 	vm, err := c.manager.DomainLookupByName(cid.AsString())
 	if err != nil {
 		return false, bosherr.WrapErrorf(err, "unable to find '%s' VM", cid.AsString())
@@ -190,6 +200,7 @@ func (c CPI) HasVM(cid apiv1.VMCID) (bool, error) {
 }
 
 func (c CPI) RebootVM(cid apiv1.VMCID) error {
+	defer c.manager.Disconnect()
 	return c.manager.DomainReboot(cid.AsString())
 }
 

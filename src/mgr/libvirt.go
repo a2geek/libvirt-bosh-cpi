@@ -37,6 +37,10 @@ type libvirtManager struct {
 	defaultPool libvirt.StoragePool
 }
 
+func (m libvirtManager) Disconnect() error {
+	return m.client.Disconnect()
+}
+
 func (m libvirtManager) CreateStorageVolume(name string, sizeInBytes uint64) (libvirt.StorageVol, error) {
 	xml, err := m.generateStorageVolumeXML(name, sizeInBytes)
 	if err != nil {

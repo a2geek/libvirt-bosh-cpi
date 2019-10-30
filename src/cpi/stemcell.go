@@ -14,6 +14,8 @@ import (
 )
 
 func (c CPI) CreateStemcell(imagePath string, cloudProps apiv1.StemcellCloudProps) (apiv1.StemcellCID, error) {
+	defer c.manager.Disconnect()
+
 	uuid, err := c.uuidGen.Generate()
 	if err != nil {
 		return apiv1.StemcellCID{}, bosherr.WrapError(err, "generating uuid")
@@ -99,6 +101,8 @@ func (c CPI) readStemcellCloudProps(cid string) (LibvirtStemcellCloudProps, erro
 }
 
 func (c CPI) DeleteStemcell(cid apiv1.StemcellCID) error {
+	defer c.manager.Disconnect()
+
 	name := c.stemcellName(cid.AsString())
 	if err := c.manager.StorageVolDeleteByName(name); err != nil {
 		return bosherr.WrapErrorf(err, "unable to delete '%s' storage volume", name)

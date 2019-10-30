@@ -12,6 +12,7 @@ type Manager interface {
 	CreateStorageVolume(name string, sizeInBytes uint64) (libvirt.StorageVol, error)
 	CreateStorageVolumeFromBytes(name string, data []byte) (libvirt.StorageVol, error)
 	CreateStorageVolumeFromImage(name string, image io.Reader, sizeInBytes uint64) (libvirt.StorageVol, error)
+	Disconnect() error
 	DomainAttachDisk(vmName string, storageVol StorageVolXml) error
 	DomainAttachManualNetworkInterface(dom libvirt.Domain, ip string) error
 	DomainDestroy(name string) error
