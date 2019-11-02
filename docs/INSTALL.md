@@ -51,7 +51,7 @@ All commands should be run from the root of this repository.
    $ export LIBVIRT_CONNECTIVITY=libvirt-tls.yml
    ```
 
-3. Create a release. Only needed first time and if there are any code changes.
+3. Create a release. Only needed for development.
    ```
    $ bosh create-release --force --tarball $PWD/cpi
    ```
@@ -75,6 +75,7 @@ All commands should be run from the root of this repository.
        --vars-file=manifests/libvirt-kvm-vars.yml
    ```
    Notes:
+   * For development, add `--ops-file=manifests/libvirt-cpi-dev.yml \` to bring in the local copy of the Libvirt CPI.
    * `jumpbox-user.yml` operations file gives access to a user on the BOSH Director that has access to the `root` account. Useful for development work - feel free to leave it off.
    * `cpi-resize-disk.yml` indicates this CPI is able to resize a disk natively. Untested at this time. Feel free to leave it off; note that resizing means BOSH mounts two disks and copies files between the disks, and with current configuration that may not work.
    * `dns.yml` changes the default DNS based on the `internal_dns` entry. Leave it off unless you actually need it.

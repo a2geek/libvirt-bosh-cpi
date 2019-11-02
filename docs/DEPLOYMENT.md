@@ -14,7 +14,8 @@ $ bosh -n update-cloud-config manifests/cloud-config.yml
 
 Upload a stemcell (check for current Openstack stemcells at [bosh.io](https://bosh.io/stemcells/bosh-openstack-kvm-ubuntu-xenial-go_agent)):
 ```
-$ bosh upload-stemcell --sha1 b5f9671591b22602b982fbf4f2320fe971718f7e  https://bosh.io/d/stemcells/bosh-openstack-kvm-ubuntu-xenial-go_agent?v=456.3
+$ bosh upload-stemcell --sha1 9c6153c5a41b48e5833b1f25fced4e06fa6d6ba1 \
+    https://bosh.io/d/stemcells/bosh-openstack-kvm-ubuntu-xenial-go_agent?v=456.51
 ```
 
 # Samples

@@ -82,9 +82,7 @@ virsh # exit
 
 ## Network
 
-The `default` network in Libvirt doesn't allow API level integration to enable "public" IP's.  That makes, for instance, the `bosh` VM unreachable from a remote machine.
-
-To overcome this, create a bridge network. (Note that this was a struggle for me, so if you know better do what you know.)
+Instead of using the `default` network, I've created a dedicated network and parcel it out for static IP's as well as dynamic IP's for simple management.
 
 Ubuntu Server now comes with [Netplan](https://netplan.io/) installed. Backup the existing `/etc/netplan/50-cloud-init.yaml` and replace it with something like this:
 
