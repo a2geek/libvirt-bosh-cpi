@@ -24,6 +24,8 @@ github.com/diskfs/go-diskfs/filesystem/iso9660
 github.com/diskfs/go-diskfs/partition
 github.com/diskfs/go-diskfs/util
 github.com/diskfs/go-diskfs/partition/gpt
+# github.com/gofrs/flock v0.7.1
+github.com/gofrs/flock
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
 github.com/nu7hatch/gouuid
 # github.com/pkg/errors v0.8.1

@@ -3,15 +3,18 @@ package mgr
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/xml"
 	"io"
 	"libvirt-bosh-cpi/config"
 	"libvirt-bosh-cpi/util"
 	"text/template"
+	"time"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/digitalocean/go-libvirt"
+	"github.com/gofrs/flock"
 )
 
 func NewLibvirtManager(client *libvirt.Libvirt, settings config.LibvirtSettings, logger boshlog.Logger) (Manager, error) {
@@ -20,11 +23,14 @@ func NewLibvirtManager(client *libvirt.Libvirt, settings config.LibvirtSettings,
 		return nil, bosherr.WrapErrorf(err, "unable to locate '%s' storage pool", settings.StoragePoolName)
 	}
 
+	fileLock := flock.New("/var/lock/libvirt-storage-volume.lock")
+
 	m := libvirtManager{
 		client:      client,
 		settings:    settings,
 		logger:      logger,
 		defaultPool: pool,
+		fileLock:    fileLock,
 	}
 
 	return m, nil
@@ -35,13 +41,26 @@ type libvirtManager struct {
 	settings    config.LibvirtSettings
 	logger      boshlog.Logger
 	defaultPool libvirt.StoragePool
+	fileLock    *flock.Flock
 }
 
 func (m libvirtManager) Disconnect() error {
 	return m.client.Disconnect()
 }
 
+func (m libvirtManager) unlocker() {
+	if err := m.fileLock.Unlock(); err != nil {
+		m.logger.Error("flock", "Unable to unlock: %v", err)
+	}
+}
+
 func (m libvirtManager) CreateStorageVolume(name string, sizeInBytes uint64) (libvirt.StorageVol, error) {
+	_, err := m.fileLock.TryLockContext(context.TODO(), 30*time.Second)
+	if err != nil {
+		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to achieve lock")
+	}
+	defer m.unlocker()
+
 	xml, err := m.generateStorageVolumeXML(name, sizeInBytes)
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to generate storage volume XML")
@@ -125,6 +144,12 @@ func (m libvirtManager) DomainStart(dom libvirt.Domain) error {
 }
 
 func (m libvirtManager) CreateStorageVolumeFromBytes(name string, data []byte) (libvirt.StorageVol, error) {
+	_, err := m.fileLock.TryLockContext(context.TODO(), 30*time.Second)
+	if err != nil {
+		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to achieve lock")
+	}
+	defer m.unlocker()
+
 	sizeInBytes := uint64(len(data))
 
 	vol, err := m.CreateStorageVolume(name, sizeInBytes)
@@ -165,6 +190,12 @@ func (m libvirtManager) ReadStorageVolumeBytes(name string) ([]byte, error) {
 }
 
 func (m libvirtManager) CreateStorageVolumeFromImage(name string, imageReader io.Reader, diskSizeInBytes uint64) (libvirt.StorageVol, error) {
+	_, err := m.fileLock.TryLockContext(context.TODO(), 30*time.Second)
+	if err != nil {
+		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to achieve lock")
+	}
+	defer m.unlocker()
+
 	vol, err := m.CreateStorageVolume(name, diskSizeInBytes)
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to create storage volume from image")
@@ -179,6 +210,12 @@ func (m libvirtManager) CreateStorageVolumeFromImage(name string, imageReader io
 }
 
 func (m libvirtManager) CloneStorageVolumeFromStemcell(name, stemcell string) (libvirt.StorageVol, error) {
+	_, err := m.fileLock.TryLockContext(context.TODO(), 30*time.Second)
+	if err != nil {
+		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to achieve lock")
+	}
+	defer m.unlocker()
+
 	stemcellVol, err := m.StorageVolLookupByName(stemcell)
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to locate stemcell")

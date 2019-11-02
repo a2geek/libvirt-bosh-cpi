@@ -10,6 +10,7 @@ require (
 	github.com/digitalocean/go-libvirt v0.0.0-20190626172931-4d226dd6c437 // GOOD
 	//github.com/digitalocean/go-libvirt v0.0.0-20190715144809-7b622097a793 // BAD
 	github.com/diskfs/go-diskfs v0.0.0-20190908084356-97765bad053b
+	github.com/gofrs/flock v0.7.1
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
