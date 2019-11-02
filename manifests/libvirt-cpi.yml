@@ -3,9 +3,9 @@
   path: /releases/-
   value:
     name: libvirt-bosh-cpi
-    url: https://github.com/a2geek/libvirt-bosh-cpi/releases/download/v1/libvirt-bosh-cpi.tgz
-    version: v1
-    sha1: 5e47d7d1f216bfdb0f3dcc8341e6cd07aeb3f268
+    url: https://github.com/a2geek/libvirt-bosh-cpi/releases/download/v2/libvirt-bosh-cpi.tgz
+    version: v2
+    sha1: 697faa6996b36fa36d69296c1f913d2f11907667
 
 # Configure Bosh VM size
 - type: replace
