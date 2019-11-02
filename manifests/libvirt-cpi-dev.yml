@@ -1,5 +1,5 @@
 - type: replace
-  path: /releases/-
+  path: /releases/name=libvirt-bosh-cpi
   value:
     name: libvirt-bosh-cpi
     url: file://((cpi_path))
