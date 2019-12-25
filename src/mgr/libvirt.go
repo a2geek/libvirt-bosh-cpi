@@ -3,34 +3,30 @@ package mgr
 import (
 	"bufio"
 	"bytes"
-	"context"
 	"encoding/xml"
 	"io"
 	"libvirt-bosh-cpi/config"
+	"libvirt-bosh-cpi/throttle"
 	"libvirt-bosh-cpi/util"
 	"text/template"
-	"time"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	"github.com/digitalocean/go-libvirt"
-	"github.com/gofrs/flock"
 )
 
-func NewLibvirtManager(client *libvirt.Libvirt, settings config.LibvirtSettings, logger boshlog.Logger) (Manager, error) {
-	pool, err := client.StoragePoolLookupByName(settings.StoragePoolName)
+func NewLibvirtManager(client *libvirt.Libvirt, config config.Config, logger boshlog.Logger) (Manager, error) {
+	pool, err := client.StoragePoolLookupByName(config.Settings.StoragePoolName)
 	if err != nil {
-		return nil, bosherr.WrapErrorf(err, "unable to locate '%s' storage pool", settings.StoragePoolName)
+		return nil, bosherr.WrapErrorf(err, "unable to locate '%s' storage pool", config.Settings.StoragePoolName)
 	}
-
-	fileLock := flock.New("/var/lock/libvirt-storage-volume.lock")
 
 	m := libvirtManager{
 		client:      client,
-		settings:    settings,
+		settings:    config.Settings,
 		logger:      logger,
 		defaultPool: pool,
-		fileLock:    fileLock,
+		throttle:    throttle.NewThrottle(config.Throttle),
 	}
 
 	return m, nil
@@ -41,7 +37,7 @@ type libvirtManager struct {
 	settings    config.LibvirtSettings
 	logger      boshlog.Logger
 	defaultPool libvirt.StoragePool
-	fileLock    *flock.Flock
+	throttle    throttle.Throttle
 }
 
 func (m libvirtManager) Disconnect() error {
@@ -49,13 +45,13 @@ func (m libvirtManager) Disconnect() error {
 }
 
 func (m libvirtManager) unlocker() {
-	if err := m.fileLock.Unlock(); err != nil {
+	if err := m.throttle.Unlock(); err != nil {
 		m.logger.Error("flock", "Unable to unlock: %v", err)
 	}
 }
 
 func (m libvirtManager) CreateStorageVolume(name string, sizeInBytes uint64) (libvirt.StorageVol, error) {
-	_, err := m.fileLock.TryLockContext(context.TODO(), 30*time.Second)
+	err := m.throttle.Lock()
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to achieve lock")
 	}
@@ -144,7 +140,7 @@ func (m libvirtManager) DomainStart(dom libvirt.Domain) error {
 }
 
 func (m libvirtManager) CreateStorageVolumeFromBytes(name string, data []byte) (libvirt.StorageVol, error) {
-	_, err := m.fileLock.TryLockContext(context.TODO(), 30*time.Second)
+	err := m.throttle.Lock()
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to achieve lock")
 	}
@@ -190,7 +186,7 @@ func (m libvirtManager) ReadStorageVolumeBytes(name string) ([]byte, error) {
 }
 
 func (m libvirtManager) CreateStorageVolumeFromImage(name string, imageReader io.Reader, diskSizeInBytes uint64) (libvirt.StorageVol, error) {
-	_, err := m.fileLock.TryLockContext(context.TODO(), 30*time.Second)
+	err := m.throttle.Lock()
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to achieve lock")
 	}
@@ -210,7 +206,7 @@ func (m libvirtManager) CreateStorageVolumeFromImage(name string, imageReader io
 }
 
 func (m libvirtManager) CloneStorageVolumeFromStemcell(name, stemcell string) (libvirt.StorageVol, error) {
-	_, err := m.fileLock.TryLockContext(context.TODO(), 30*time.Second)
+	err := m.throttle.Lock()
 	if err != nil {
 		return libvirt.StorageVol{}, bosherr.WrapError(err, "unable to achieve lock")
 	}

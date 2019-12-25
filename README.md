@@ -8,11 +8,18 @@ Cloud Foundry is a very interesting tool and environment to target and use for d
 
 Libvirt is a good compromise. The current intent is to keep it scoped at 1 host. If something larger exists, there are a number of solutions.
 
+# Features
+
+* Libvirt settings are configurable. Copy `manifests/libvirt-kvm-vars.yml` or `manifests/libvirt-qemu-vars.yml` to setup custom configurations.
+* Libvirt connectivity is configurable. Options include TCP or TLS connections. Unix sockets are available, but without being able to map the socket into the BOSH VM is unrealistic. See `manifests/libvirt-socket.yml`, `manifests/libvirt-tcp.yml`, and `manifests/libvirt-tls.yml`.
+* Throttling capabilities. Slower disks become problematic for larger deployments. A simple file-locking mechanism throttles VM creation to not swamp slower hosts. See `manifests/throttle-file-lock.yml`. This capability is expandable if other needs arise.
+* Ability to experiment with various stemcells. There are 3 stemcells which may work with Libvirt. See [Stemcell experiments](docs/STEMCELLS.md) for details.
+
 # Status
 
-Many things do work at this point and the CPI is pretty stable. Most likely a BOSH deployment will successfully _deploy_. Longer term management (resizing disks or snapshotting vms, for instance) either are untested or unimplemented at this point.
+The CPI is capable of running and managing BOSH deployments, generally without issue. Longer term management (resizing disks or snapshotting vms, for instance) either are untested or unimplemented at this point.
 
-> Note that as of [v2](https://github.com/a2geek/libvirt-bosh-cpi/releases/tag/v2), the CPI only manages one disk at a time. This was done to help with deployments like Cloud Foundry that create 15 (or more!) VM's at once. With slower disks (non-NVMe) the machine may not be able to keep up. This keeps it manageable at the cost of slowing down VM creation.
+> Note that as of [v3](https://github.com/a2geek/libvirt-bosh-cpi/releases/tag/v3), disk management is configurable with throttling. This was done to help with deployments like Cloud Foundry that create 15 (or more!) VM's at once. With slower disks (non-NVMe) the machine may not be able to keep up. This keeps it manageable at the cost of slowing down VM creation.
 
 Feel free to try it out! Feedback and PR's are welcome.
 

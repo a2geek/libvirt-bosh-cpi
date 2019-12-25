@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"libvirt-bosh-cpi/connection"
+	"libvirt-bosh-cpi/throttle"
 
 	"github.com/cloudfoundry/bosh-utils/errors"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
@@ -18,6 +19,7 @@ type Config struct {
 	Settings       LibvirtSettings
 	Stemcell       StemcellSettings
 	VMPublicKey    string
+	Throttle       throttle.ThrottleConfig
 }
 type LibvirtSettings struct {
 	DiskDeviceXml             string

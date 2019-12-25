@@ -75,9 +75,10 @@ All commands should be run from the root of this repository.
        --vars-file=manifests/libvirt-kvm-vars.yml
    ```
    Notes:
-   * For development, add `--ops-file=manifests/libvirt-cpi-dev.yml \` to bring in the local copy of the Libvirt CPI.
+   * For development, add `--ops-file=manifests/libvirt-cpi-dev.yml \` (_after_ the `libvirt-cpi.yml` declaration) to bring in the local copy of the Libvirt CPI.
    * `jumpbox-user.yml` operations file gives access to a user on the BOSH Director that has access to the `root` account. Useful for development work - feel free to leave it off.
    * `cpi-resize-disk.yml` indicates this CPI is able to resize a disk natively. Untested at this time. Feel free to leave it off; note that resizing means BOSH mounts two disks and copies files between the disks, and with current configuration that may not work.
    * `dns.yml` changes the default DNS based on the `internal_dns` entry. Leave it off unless you actually need it.
    * There are two sets of variable files for hypervisor selection: `kvm` and `qemu`, all of which are using the Openstack stemcell. From the Libvirt documentation, `kvm` is likely the best for performance reasons (`openstack-kvm-vars.yml`) as `qemu` virtualizes the entire CPU.
    * With current releases of [bosh-deployment](https://github.com/cloudfoundry/bosh-deployment), the [reboot bug](https://github.com/cloudfoundry/bosh/issues/2131) has been resolved with more current versions of BPM. If you must use an older version of BOSH and the reboot deal is a problem, see the [bosh-reboot-patch](https://github.com/a2geek/bosh-reboot-patch) as it may prove useful. The best option is to get a more current installation of BOSH.
+   * Throttling can be enabled. Default is no throttling. Use the `--ops-file=manifests/throttle-noop.yml \` ops file to explicitly enable no-op throttling (default) or `--ops-file=manifests/throttle-file-lock.yml \` to enable file locking. The throttling is achieved by managing the number of _disks_ being created at any time. For a single host, the file I/O appears to be the weak point. Hosts with NVMe or fast SSD's likely will not require throttling. For old style spinning disks, enable the file throttle so save gnashing of teeth, not to mention timeouts!

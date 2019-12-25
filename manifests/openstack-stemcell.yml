@@ -2,8 +2,8 @@
 - type: replace
   path: /resource_pools/name=vms/stemcell?
   value:
-    url: https://bosh.io/d/stemcells/bosh-openstack-kvm-ubuntu-xenial-go_agent?v=456.12
-    sha1: 0b82bdf3fd0029204363cc177bb4904bf70ec6b2
+    url: https://bosh.io/d/stemcells/bosh-openstack-kvm-ubuntu-xenial-go_agent?v=621.29
+    sha1: 6b8c32d1066ad03bc42a4e74773ac9ba8f26a2cb
 
 # This is for rendering within the VM once stood up
 - type: replace

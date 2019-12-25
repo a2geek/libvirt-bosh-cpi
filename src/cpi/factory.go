@@ -33,7 +33,7 @@ func (f Factory) New(_ apiv1.CallContext) (apiv1.CPI, error) {
 		return nil, bosherr.WrapError(err, "failed to connect")
 	}
 
-	m, err := mgr.NewLibvirtManager(l, f.config.Settings, f.logger)
+	m, err := mgr.NewLibvirtManager(l, f.config, f.logger)
 	if err != nil {
 		return nil, bosherr.WrapError(err, "failed to create Libvirt manager")
 	}

@@ -1,0 +1,9 @@
+# Disable all throttling
+- type: replace
+  path: /instance_groups/name=bosh/properties/libvirt_cpi?/throttle?/name?
+  value: noop
+
+# This is for initial standup of VM (bootstrap?)
+- type: replace
+  path: /cloud_provider/properties/libvirt_cpi?/throttle?/name?
+  value: noop
