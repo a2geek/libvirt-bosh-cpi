@@ -1,5 +1,8 @@
 # libvirt-bosh-cpi
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/a2geek/libvirt-bosh-cpi)](https://goreportcard.com/report/github.com/a2geek/libvirt-bosh-cpi)
+[![GitHub release](https://img.shields.io/github/v/release/a2geek/libvirt-bosh-cpi)](https://github.com/a2geek/libvirt-bosh-cpi/releases/latest)
+
 A Go BOSH CPI for the [libvirt virtualization API](https://libvirt.org/).
 
 # Motivation
