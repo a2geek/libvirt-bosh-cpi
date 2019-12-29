@@ -84,7 +84,7 @@ func (c configDriveManager) Update(agentEnv apiv1.AgentEnv) error {
 	// Metadata contains the SSH key
 	metadata := metadataContentsType{
 		PublicKeys: map[string]publicKeyType{
-			"0": publicKeyType{
+			"0": {
 				"openssh-key": c.config.VMPublicKey,
 			},
 		},
