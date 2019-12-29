@@ -13,13 +13,13 @@ func GenerateRandomHardwareAddr() (net.HardwareAddr, error) {
 		if err != nil {
 			return nil, err
 		}
-	
+
 		// Set local bit, ensure unicast address
 		buf[0] = (buf[0] | 2) & 0xfe
 
 		// Libvirt apparently uses 0xfe for tap devices; only keeping MAC addresses without 0xfe
 		if buf[0] != 0xfe {
-			break;
+			break
 		}
 	}
 
