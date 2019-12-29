@@ -16,7 +16,7 @@ type AgentManager interface {
 	ToBytes() ([]byte, error)
 }
 
-// NewAgentManager will initalize a new config drive for AgentEnv settings
+// NewAgentManager will initialize a new config drive for AgentEnv settings
 func NewAgentManager(config config.Config) (AgentManager, error) {
 	var a AgentManager
 	var err error

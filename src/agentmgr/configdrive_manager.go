@@ -18,7 +18,7 @@ import (
 	"github.com/diskfs/go-diskfs/partition/mbr"
 )
 
-// NewConfigDriveManager will initalize a new config drive for AgentEnv settings
+// NewConfigDriveManager will initialize a new config drive for AgentEnv settings
 func NewConfigDriveManager(config config.Config) (AgentManager, error) {
 	name, err := tempFileName("fat32")
 	if err != nil {
