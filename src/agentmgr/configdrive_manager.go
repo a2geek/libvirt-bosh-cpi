@@ -166,6 +166,9 @@ func (c configDriveManager) createDisk() error {
 		},
 	}
 	err = image.Partition(table)
+	if err != nil {
+		return err
+	}
 
 	fs, err := image.CreateFilesystem(disk.FilesystemSpec{
 		Partition:   1,

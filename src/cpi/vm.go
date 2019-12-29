@@ -45,6 +45,9 @@ func (c CPI) CreateVMV2(
 	// BUG? Always creating the ephemeral disk.
 	var props LibvirtVMCloudProps
 	err = cloudProps.As(&props)
+	if err != nil {
+		return apiv1.VMCID{}, apiv1.Networks{}, bosherr.WrapError(err, "unable to read VM cloud properties")
+	}
 	ephemeralName := c.ephemeralDiskName(uuid)
 	ephemeralDiskInBytes := props.EphemeralDisk * bytesPerMegabyte
 	_, err = c.manager.CreateStorageVolume(ephemeralName, ephemeralDiskInBytes)
