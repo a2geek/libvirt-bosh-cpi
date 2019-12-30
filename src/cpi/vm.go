@@ -137,7 +137,7 @@ func (c CPI) DeleteVM(cid apiv1.VMCID) error {
 			return bosherr.WrapErrorf(err, "unable to detach disk '%s' from vm '%s'", diskCID.AsString(), cid.AsString())
 		}
 
-		if c.isPersistentDisk(diskCID.AsString()) {
+		if c.IsPersistentDisk(diskCID.AsString()) {
 			// Ensure persistent disks are detached but not deleted!
 		} else {
 			err = c.deleteDisk(diskCID)

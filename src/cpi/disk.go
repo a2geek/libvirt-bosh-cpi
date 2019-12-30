@@ -31,7 +31,7 @@ func (c CPI) GetDisks(cid apiv1.VMCID) ([]apiv1.DiskCID, error) {
 	// Keep Only persistent
 	var diskcids []apiv1.DiskCID
 	for _, diskcid := range allDisks {
-		if c.isPersistentDisk(diskcid.AsString()) {
+		if c.IsPersistentDisk(diskcid.AsString()) {
 			diskcids = append(diskcids, diskcid)
 		}
 	}
@@ -71,7 +71,7 @@ func (c CPI) CreateDisk(sizeInMegabytes int,
 	}
 
 	sizeInBytes := sizeInMegabytes * bytesPerMegabyte
-	name := c.persistentDiskName(uuid)
+	name := c.PersistentDiskName(uuid)
 
 	_, err = c.manager.CreateStorageVolume(name, uint64(sizeInBytes))
 	if err != nil {
@@ -206,10 +206,10 @@ func (c CPI) DeleteSnapshot(cid apiv1.SnapshotCID) error {
 	return nil
 }
 
-func (c CPI) persistentDiskName(cid string) string {
+func (c CPI) PersistentDiskName(cid string) string {
 	return fmt.Sprintf("pdisk-%s", cid)
 }
 
-func (c CPI) isPersistentDisk(cid string) bool {
+func (c CPI) IsPersistentDisk(cid string) bool {
 	return strings.HasPrefix(cid, "pdisk-")
 }
