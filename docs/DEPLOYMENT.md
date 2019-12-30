@@ -28,4 +28,5 @@ These deployments can be used as a starting point!
 * [Cloud Foundry](CF.md)
 * [CF MySQL](CF_MYSQL.md) - brokered service
 * [CF Redis](CF_REDIS.md) - brokered service
+* [Blacksmith](BLACKSMITH.md) - multiple brokered services, including clustered services
 * [Kubo/Kubernetes](KUBO.md)

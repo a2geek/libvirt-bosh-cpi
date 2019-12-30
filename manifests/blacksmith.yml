@@ -1,0 +1,130 @@
+---
+name: blacksmith
+
+instance_groups:
+  - name: blacksmith
+    instances: 1
+    stemcell:  default
+    azs:       [z1]
+    vm_type:   default
+    persistent_disk: 2_048
+    networks:
+      - name:       default
+        static_ips: [((blacksmith_ip))]
+    jobs:
+      - release: blacksmith
+        name:    blacksmith
+        properties:
+          debug: false
+          env:   ((blacksmith_ip))
+
+          broker:
+            username: blacksmith
+            password: ((broker_password))
+
+          bosh:
+            username: ((bosh_username))
+            password: ((bosh_password))
+            address:  https://((bosh_ip)):25555
+
+      - name:    redis-blacksmith-plans
+        release: redis-forge
+        properties:
+          plans:
+            small:
+              type:     standalone
+              persist:  true
+              disk:     4_096
+              network:  default
+            large:
+              type:     standalone
+              persist:  true
+              disk:     16_384
+              network:  default
+            cache:
+              type:     standalone
+              network:  default
+            clustered-1x1:
+              type:     cluster
+              masters:  1
+              replicas: 1
+              network:  default
+            clustered-2x1:
+              type:     cluster
+              masters:  2
+              replicas: 1
+              network:  default
+
+      - name:    rabbitmq-blacksmith-plans
+        release: rabbitmq-forge
+        properties:
+          plans:
+            single:
+              type:      standalone
+              network:   default
+            cluster-3:
+              type:      cluster
+              instances: 3
+              network:   default
+
+      - name:    mariadb-blacksmith-plans
+        release: mariadb-forge
+        properties:
+          plans:
+            small-4G:
+              type:      standalone
+              disk:      4_096
+              network:   default
+
+      - name:    postgresql-blacksmith-plans
+        release: postgresql-forge
+        properties:
+          plans:
+            small-4G:
+              type:      standalone
+              disk:      4_096
+              network:   default
+            clustered-4G:
+              type:      cluster
+              instances: 3
+              disk:      4_096
+              network:   default
+
+variables:
+  - name: broker_password
+    type: password
+
+update:
+  serial: false
+  canaries: 1
+  canary_watch_time: 30000-600000
+  update_watch_time: 5000-600000
+  max_in_flight: 1
+  max_errors: 1
+
+stemcells:
+  - alias:   default
+    os:      ubuntu-xenial
+    version: latest
+
+releases:
+- name:    blacksmith
+  version: 1.0.4
+  url:     https://github.com/blacksmith-community/blacksmith-boshrelease/releases/download/v1.0.4/blacksmith-1.0.4.tgz
+  sha1:    58985cd83832162d93b7a6d706757508cafb4028
+- name:    redis-forge
+  version: 0.4.1
+  url:     https://github.com/blacksmith-community/redis-forge-boshrelease/releases/download/v0.4.1/redis-forge-0.4.1.tgz
+  sha1:    3b1338b59ed65c4c1fce51ccdca3d580fc45c75e
+- name:    rabbitmq-forge
+  version: 0.2.0
+  url:     https://github.com/blacksmith-community/rabbitmq-forge-boshrelease/releases/download/v0.2.0/rabbitmq-forge-0.2.0.tgz
+  sha1:    6b0da328e32657fc54185a3478ba7ec7f1436a4b
+- name:    mariadb-forge
+  version: 0.3.0
+  url:     https://github.com/blacksmith-community/mariadb-forge-boshrelease/releases/download/v0.3.0/mariadb-forge-0.3.0.tgz
+  sha1:    b04c255b150cf12c048659e8368a68c8547babd2
+- name:    postgresql-forge
+  version: 0.2.1
+  url:     https://github.com/blacksmith-community/postgresql-forge-boshrelease/releases/download/v0.2.1/postgresql-forge-0.2.1.tgz
+  sha1:    0ed2122605e911e1ed96bafb02dbd1d764b60c8e
