@@ -8,6 +8,13 @@ $ go build -mod=vendor -o a.out main/main.go
 $ rm a.out
 ```
 
+Also, tests can be run:
+
+```
+$ cd src
+$ go test -v ./...
+```
+
 # Agent configuration 
 
 The agent configuration structures are here:
