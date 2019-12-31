@@ -3,13 +3,18 @@ help:
 	@echo Please choose a valid target: build, test, release, final-release, clean, delete-deployments, wipe-everything
 
 build:
-	cd src/
-	go build -mod=vendor -o a.out main/main.go
-	rm a.out
+	{ \
+	  cd src/; \
+	  go build -mod=vendor -o a.out main/main.go; \
+	  rm a.out; \
+	}
 
 test:
-	cd src/
-	go test -v ./...
+	{ \
+	  cd src/; \
+	  go version; \
+	  go test -v ./...; \
+	}
 
 release:
 	bosh create-release --force --tarball $(PWD)/cpi
