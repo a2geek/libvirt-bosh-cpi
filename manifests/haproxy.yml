@@ -1,0 +1,49 @@
+---
+name: haproxy
+
+addons:
+- name: bpm
+  jobs:
+  - name: bpm
+    release: bpm
+
+instance_groups:
+- name: haproxy
+  azs: [z1]
+  instances: 1
+  vm_type: default
+  stemcell: default
+  networks: 
+  - name: default
+    static_ips:
+    - 192.168.123.252   # Yes, this is overloaded
+  jobs:
+  - name: haproxy
+    release: haproxy
+    properties:
+      ha_proxy:
+        backend_port: ((haproxy-backend-port))
+        backend_servers: ((haproxy-backend-servers))
+        backend_use_http_health: ((haproxy-backend-health-enabled))
+        backend_http_health_uri: ((haproxy-backend-health-uri))
+        backend_http_health_port: ((haproxy-backend-health-port))
+
+update:
+  canaries: 1
+  max_in_flight: 1
+  canary_watch_time: 1000-30000
+  update_watch_time: 1000-30000
+  serial: false
+
+stemcells:
+  - alias: default
+    os: ubuntu-xenial
+    version: latest
+
+releases:
+- name: bpm
+  version: 1.1.8
+- name: haproxy
+  version: 10.1.0
+  url: https://github.com/cloudfoundry-incubator/haproxy-boshrelease/releases/download/v10.1.0/haproxy-10.1.0.tgz
+  sha1: c892c02b90913a669d06b03ce27964dd403139f4

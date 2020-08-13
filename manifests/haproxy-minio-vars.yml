@@ -1,0 +1,6 @@
+haproxy-backend-port: 9000
+haproxy-backend-servers: 
+- q-s3.minio.default.minio.bosh
+haproxy-backend-health-enabled: true
+haproxy-backend-health-uri: /minio/health/ready
+haproxy-backend-health-port: 9000

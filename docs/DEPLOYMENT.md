@@ -30,3 +30,4 @@ These deployments can be used as a starting point!
 * [CF Redis](CF_REDIS.md) - brokered service
 * [Blacksmith](BLACKSMITH.md) - multiple brokered services, including clustered services
 * [Kubo/Kubernetes](KUBO.md)
+* [MinIO](MINIO.md) - S3 compatible storage
