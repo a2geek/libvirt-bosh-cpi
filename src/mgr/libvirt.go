@@ -312,7 +312,7 @@ func (m libvirtManager) DomainAttachDisk(vmName string, storageVol StorageVolXml
 	}
 	err = m.client.DomainAttachDeviceFlags(vm, xml.String(), uint32(flags))
 	if err != nil {
-		return bosherr.WrapErrorf(err, "unable to attach, disk xml = %s", xml.String())
+		return bosherr.WrapErrorf(err, "unable to attach (flags=%d), disk xml = %s", flags, xml.String())
 	}
 
 	return nil
