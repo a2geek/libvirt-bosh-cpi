@@ -1,0 +1,27 @@
+name: libvirt-bosh-cpi
+version: v4
+commit_hash: 9d17117
+uncommitted_changes: false
+jobs:
+- name: libvirt_cpi
+  version: b4a85cfd7d2802e30c601f41117a4b9580a0cb9272d0bf925acb54de960a7995
+  fingerprint: b4a85cfd7d2802e30c601f41117a4b9580a0cb9272d0bf925acb54de960a7995
+  sha1: sha256:dddd0c209dbc874ce78b65a6294c8cfb640d2e5051ef2fd498c64ef0bef4defd
+  packages:
+  - libvirt_cpi
+packages:
+- name: golang-1.12-linux
+  version: 366fab6a3d5aabbaf5dd48b146f961310322fd86aed24bc3bc50fca22561390d
+  fingerprint: 366fab6a3d5aabbaf5dd48b146f961310322fd86aed24bc3bc50fca22561390d
+  sha1: sha256:12e13365acb8d011c367ceff3045c59418b354e6b57d664af59af2b007668fcb
+  dependencies: []
+- name: libvirt_cpi
+  version: 4325d95a63cf7bf110fb98b469adae3334a6a179941551ae3f9584ba680ce855
+  fingerprint: 4325d95a63cf7bf110fb98b469adae3334a6a179941551ae3f9584ba680ce855
+  sha1: sha256:88a74147f7985201fa5e64a8750078f9cd0c830dfc50e149de0c72f0dfd4bc39
+  dependencies:
+  - golang-1.12-linux
+license:
+  version: b531f7c93af196c2f0b9f2f94149f6e4f64c1f20b0fdc54bf7dd6bf34bee8492
+  fingerprint: b531f7c93af196c2f0b9f2f94149f6e4f64c1f20b0fdc54bf7dd6bf34bee8492
+  sha1: sha256:a40132f6d2dadd36c9338e9fc79308093c125d5782e2d9a2a91fdca732a3378b
