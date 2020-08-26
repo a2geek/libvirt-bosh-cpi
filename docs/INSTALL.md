@@ -60,7 +60,6 @@ All commands should be run from the root of this repository.
    ```
    $ bosh create-env ${BOSH_DEPLOYMENT_DIR}/bosh.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/jumpbox-user.yml \
-       --ops-file=${BOSH_DEPLOYMENT_DIR}/misc/cpi-resize-disk.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/misc/dns.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/bbr.yml \
        --ops-file=${BOSH_DEPLOYMENT_DIR}/uaa.yml \

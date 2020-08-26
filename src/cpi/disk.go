@@ -102,13 +102,44 @@ func (c CPI) AttachDisk(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) error {
 func (c CPI) AttachDiskV2(vmCID apiv1.VMCID, diskCID apiv1.DiskCID) (apiv1.DiskHint, error) {
 	defer c.manager.Disconnect()
 
-	err := c.attachDiskDevice(vmCID.AsString(), diskCID.AsString(), "vdd")
+	device, err := c.findDiskDevice(vmCID, "vdd", "vde")
+	if err != nil {
+		return apiv1.NewDiskHintFromString(""), bosherr.WrapErrorf(err, "locating device for disk '%s' to vm '%s'", diskCID.AsString(), vmCID.AsString())
+	}
+
+	err = c.attachDiskDevice(vmCID.AsString(), diskCID.AsString(), device)
 	if err != nil {
 		return apiv1.NewDiskHintFromString(""), bosherr.WrapErrorf(err, "attaching disk '%s' to vm '%s'", diskCID.AsString(), vmCID.AsString())
 	}
 
-	diskHint := apiv1.NewDiskHintFromMap(map[string]interface{}{"path": "/dev/vdd"})
+	diskHint := apiv1.NewDiskHintFromMap(map[string]interface{}{"path": fmt.Sprintf("/dev/%s", device)})
 	return diskHint, nil
+}
+
+func (c CPI) findDiskDevice(vmCID apiv1.VMCID, possibleDevices ...string) (string, error) {
+	dom, err := c.manager.DomainLookupByName(vmCID.AsString())
+	if err != nil {
+		return "", bosherr.WrapError(err, "findDiskDevice: unable to locate vm")
+	}
+
+	devices, err := c.manager.DomainListDevices(dom)
+	if err != nil {
+		return "", bosherr.WrapError(err, "findDiskDevice: unable to list vm devices")
+	}
+
+	attached := map[string]bool{}
+	for _, disk := range devices.Disks {
+		attached[disk.Target.Dev] = true
+	}
+
+	//devs := []string{"vdd", "vde"}
+	for _, dev := range possibleDevices {
+		if _, exists := attached[dev]; !exists {
+			return dev, nil
+		}
+	}
+
+	return "", bosherr.WrapError(err, "findDiskDevice: unable to locate free device")
 }
 
 func (c CPI) attachDiskDevice(vmName, diskName, deviceName string) error {
