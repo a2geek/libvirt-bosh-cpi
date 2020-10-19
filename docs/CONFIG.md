@@ -256,6 +256,16 @@ $ sudo find /etc/pki -ls
  14681643      8 -rw-------   1 root     root         8170 Oct 10 03:45 /etc/pki/libvirt/private/serverkey.pem
 ```
 
+### Ubuntu 20.04
+
+To enable TLS, likely all that needs to be setup is:
+
+```
+# systemctl start libvirtd-tls.socket
+```
+
+### Ubuntu 18.04
+
 To enable TLS, the config in `/etc/default/libvirtd` needs to be altered (note `libvirt_opts`):
 
 ```
