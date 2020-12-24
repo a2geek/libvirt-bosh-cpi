@@ -26,7 +26,7 @@ final-release:
 	then \
 		echo "Nothing to do. $(last_tag) has already been released."; \
 	else \
-		bosh create-release --final --version=$(last_tag); \
+		bosh create-release --final --version=$(last_tag) --tarball $(PWD)/libvirt-bosh-cpi.tgz; \
 	fi
 
 clean:
