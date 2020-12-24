@@ -21,6 +21,7 @@ releases/**/*.tgz
 /vcap-private-key.pem
 /jumpbox-private-key.pem
 /*-creds.yml
+/libvirt-bosh-cpi.tgz
 
 # Related to VS Code
 /.vscode

@@ -7,4 +7,6 @@ builds:
     version: v1
   b915c7f7-24f3-40b0-7556-7560e9dfe658:
     version: v3
+  bfd2b3f4-ac14-49ab-4514-75c1798656ef:
+    version: v4.1
 format-version: "2"
