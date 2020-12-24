@@ -262,7 +262,24 @@ To enable TLS, likely all that needs to be setup is:
 
 ```
 # systemctl start libvirtd-tls.socket
+# systemctl enable libvirtd-tls.socket
 ```
+
+Just in case, this 'dance' has been useful:
+
+```
+$ sudo systemctl start libvirtd-tls.socket
+Job failed. See "journalctl -xe" for details.
+$ sudo systemctl stop libvirtd
+Warning: Stopping libvirtd.service, but it can still be activated by:
+  libvirtd-admin.socket
+  libvirtd.socket
+  libvirtd-ro.socket
+$ sudo systemctl start libvirtd-tls.socket
+$ sudo systemctl start libvirtd
+```
+
+Hopefully that `systemctl enable ...` ensures it remains active over a reboot.
 
 ### Ubuntu 18.04
 
