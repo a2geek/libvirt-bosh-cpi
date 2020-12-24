@@ -1,3 +1,4 @@
+last_tag="$(shell git describe --abbrev=0 --tag)"
 
 help:
 	@echo Please choose a valid target: build, test, release, final-release, clean, delete-deployments, wipe-everything
@@ -20,12 +21,12 @@ release:
 	bosh create-release --force --tarball $(PWD)/cpi
 
 final-release:
-	last_tag=$(git describe --abbrev=0)
-	if grep "version: ${last_tag}" releases/libvirt-bosh-cpi/index.yml > /dev/null
-	then
-		echo "Nothing to do."
-	else
-		bosh create-release --final --version=${last_tag}
+	@echo "Last tag = $(last_tag)"
+	@if grep "version: $(last_tag)" releases/libvirt-bosh-cpi/index.yml > /dev/null; \
+	then \
+		echo "Nothing to do. $(last_tag) has already been released."; \
+	else \
+		bosh create-release --final --version=$(last_tag); \
 	fi
 
 clean:
