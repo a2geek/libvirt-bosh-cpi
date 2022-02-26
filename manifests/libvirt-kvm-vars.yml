@@ -46,5 +46,9 @@ libvirt_vm_domain: |
       <console type='pty'>
         <target type='serial' port='0'/>
       </console>
+      <graphics type='spice' autoport='yes'>
+        <listen type='address'/>
+        <image compression='off'/>
+      </graphics>
     </devices>
   </domain>

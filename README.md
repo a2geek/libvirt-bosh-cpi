@@ -18,12 +18,19 @@ Libvirt is a good compromise. The current intent is to keep it scoped at 1 host.
 * Throttling capabilities. Slower disks become problematic for larger deployments. A simple file-locking mechanism throttles VM creation to not swamp slower hosts. See `manifests/throttle-file-lock.yml`. This capability is expandable if other needs arise.
 * Ability to experiment with various stemcells. There are 3 stemcells which may work with Libvirt. See [Stemcell experiments](docs/STEMCELLS.md) for details.
 
-# Versions
+# Libvirt Versions
 
 | Distribution | Libvirt version | Notes |
 | --- | --- | --- |
 | Ubuntu 18.04 | 4.0.0 | Initial development version |
 | Ubuntu 20.04 | 6.0.0 | Current development version |
+
+# Stemcell Versions
+
+| Stemcell version | Stemcell OS | Notes |
+| --- | --- | --- |
+| `621.x` | `ubuntu-xenial` | |
+| `1.x` | `ubuntu-bionic` | Libvirt XML requires a graphics entry. See the `<graphics...>` entry in `libvirt_vm_domain` in [libvirt-kvm-vars.yml](manifests/libvirt-kvm-vars.yml). |
 
 # Status
 
@@ -43,11 +50,11 @@ Notes:
 
 # Tickets being watched
 
-* Blocking IaaS provided disk resize: [ticket](https://github.com/cloudfoundry/bosh-agent/issues/221)
 * Libvirt command switcheroo (work-around in place): [ticket](https://github.com/digitalocean/go-libvirt/issues/87)
 
 ## Closed
 
+* Blocking IaaS provided disk resize: [ticket](https://github.com/cloudfoundry/bosh-agent/issues/221)
 * Libvirt enhancement request to allow network ingress to be specified via API: [ticket](https://bugzilla.redhat.com/show_bug.cgi?id=1761123)
 * Issues with TLS connections after a certain commit: [ticket](https://github.com/digitalocean/go-libvirt/issues/89)
 
