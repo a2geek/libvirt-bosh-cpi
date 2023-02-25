@@ -18,7 +18,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/rn/iso9660wrap v0.0.0-20180101235755-3a04f8ca150a
 	github.com/stretchr/testify v1.3.0 // indirect
-	golang.org/x/sys v0.0.0-20190907184412-d223b2b6db03 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 )
