@@ -4,8 +4,8 @@ github.com/bmatcuk/doublestar
 github.com/charlievieth/fs
 # github.com/cloudfoundry/bosh-utils v0.0.0-20190803100152-d286f594c8d9
 github.com/cloudfoundry/bosh-utils/errors
-github.com/cloudfoundry/bosh-utils/system
 github.com/cloudfoundry/bosh-utils/logger
+github.com/cloudfoundry/bosh-utils/system
 github.com/cloudfoundry/bosh-utils/uuid
 # github.com/cppforlife/bosh-cpi-go v0.0.0-20180718174221-526823bbeafd
 github.com/cppforlife/bosh-cpi-go/apiv1
@@ -18,12 +18,12 @@ github.com/digitalocean/go-libvirt/internal/go-xdr/xdr2
 github.com/diskfs/go-diskfs
 github.com/diskfs/go-diskfs/disk
 github.com/diskfs/go-diskfs/filesystem
-github.com/diskfs/go-diskfs/partition/mbr
 github.com/diskfs/go-diskfs/filesystem/fat32
 github.com/diskfs/go-diskfs/filesystem/iso9660
 github.com/diskfs/go-diskfs/partition
-github.com/diskfs/go-diskfs/util
 github.com/diskfs/go-diskfs/partition/gpt
+github.com/diskfs/go-diskfs/partition/mbr
+github.com/diskfs/go-diskfs/util
 # github.com/gofrs/flock v0.7.1
 github.com/gofrs/flock
 # github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d
@@ -34,5 +34,5 @@ github.com/pkg/errors
 github.com/rn/iso9660wrap
 # github.com/satori/go.uuid v1.2.0
 github.com/satori/go.uuid
-# golang.org/x/sys v0.0.0-20190907184412-d223b2b6db03
+# golang.org/x/sys v0.1.0
 golang.org/x/sys/unix
