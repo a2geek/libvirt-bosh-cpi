@@ -5,6 +5,10 @@
 
 A Go BOSH CPI for the [libvirt virtualization API](https://libvirt.org/).
 
+> *************************************************************
+> Please note that this project has been inactive for quite a while. My BOSH CPI focus is with LXD at this time. Please visit it at [a2geek/bosh-lxd-cpi-release](https://github.com/a2geek/bosh-lxd-cpi-release).
+> *************************************************************
+
 # Motivation
 
 Cloud Foundry is a very interesting tool and environment to target and use for development purposes. Cloud Foundry requires a BOSH CPI to deploy. Unfortunately, the existing BOSH CPI's seem to be development-only (that is, temporary), unsuitable for Cloud Foundry, or require a small cluster of machines, or deploy to a cloud provider.
